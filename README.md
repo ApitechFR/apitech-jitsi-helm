@@ -17,7 +17,20 @@ helm install myjitsi jitsi/jitsi-meet
 ## Introduction
 
 This chart bootstraps a jitsi-meet deployment, like the official
-[one](https://meet.jit.si).
+[one](https://meet.jit.si), but the Apitech way.
+
+Our cloud setup is quite different from the classic ones, so we had to
+adapt the chart to our needs.
+We also implemented our overlay, Joona.
+
+## Overlay
+Enabling the overlay is done by setting the `overlay.enabled` value to `true` in your `values.yaml` file.
+
+```yaml
+web:
+  overlay:
+    enabled: true
+```
 
 ## Exposing your Jitsi Meet installation
 
@@ -28,9 +41,11 @@ cases. Kubernetes offers multiple possibilities to work around the problem. Not
 all options are available depending on the Kubernetes cluster setup. The chart
 tries to make all options available without enforcing one.
 
-### Option 1: service of type `LoadBalancer`
+### Option 1: service of type `LoadBalancer`, but the Apitech way
 
 This requires a cloud setup that enables a Loadbalancer attachement.
+In the Apitech context, the JVB will only advertise its public IP address, but will listen on the LoadBalancer IP address.
+NAT has to be configured on the hypervisor from the public IP to the correct LoadBalancer IP address.
 This could be enabled via values:
 
 ```yaml
@@ -43,92 +58,19 @@ jvb:
   # Additionally, you can add your cluster's public IPs if you want to use direct connection as a fallback.
   publicIPs:
     - 1.2.3.4
-    # - 30.10.10.1
+    - 30.10.10.1
     # - 30.10.10.2
+  
+    externalIPsPrefix: 172.16.0
+    firstExternalIPLastOctet: 1
 ```
 
-In this case you're not allowed to change the `jvb.replicaCount` to more than
-`1`, UDP packets will be routed to random `jvb`, which would not allow for a
-working video setup.
+In this case, you would have to NAT 1.2.3.4:10000 to 172.16.0.1:10000, and 30.10.10.1:10000 to 172.16.0.2:10000.
+This allows the JVBs to all listen to the same port (UDP/10000), while being reachable from the outside world.
+This means having a single IP per JVB, but those IPs can be used somewhere else (not on a JVB though).
 
-### Option 2: NodePort and node with Public IP or external loadbalancer
-
-```yaml
-jvb:
-  service:
-    type: NodePort
-  # Set the following variable if you want to use a specific external port for the service.
-  # The default is to select a random port from Kubelet's allowed NodePort range (30000-32767).
-
-  # nodePort: 10000
-
-  # Use public IP of one (or more) of your nodes,
-  # or the public IP of an external LB:
-  publicIPs:
-    - 30.10.10.1
-```
-
-In this case you're not allowed to change the `jvb.replicaCount` to more than
-`1`, UDP packets will be routed to random `jvb`, which would not allow for a
-working video setup.
-
-### Option 3: hostPort and node with Public IP
-
-```yaml
-jvb:
-  useHostPort: true
-  # Use public IP of one (or more) of your nodes,
-  # or the public IP of an external LB:
-  publicIPs:
-    - 30.10.10.1
-```
-
-In this case you can have more the one `jvb` but you're putting you cluster at
-risk by having the nodes IPs and JVB ports directly exposed on the Internet.
-
-#### Option 3.1: hostPort and auto-detected Node IP
-
-```yaml
-jvb:
-  useHostPort: true
-  useNodeIP: true
-```
-
-This is similar to option 3, but every JVB pod will auto-detect it's own
-external IP address based on the node it's running on. This option might be
-better suited for installations that use OCTO.
-
-### Option 4: hostNetwork
-
-```yaml
-jvb:
-  useHostNetwork: true
-```
-
-Similar to Option 3, this way you expose JVB "as is" on the node, without any
-additional protection. This is not recommended, but might be useful in some rare
-cases.
-
-### Option 4: Use ingress TCP/UDP forward capabilities
-
-In case of an ingress capable of doing tcp/udp forwarding (like nginx-ingress),
-it can be setup to forward the video streams.
-
-```yaml
-# Don't forget to configure the ingress properly (separate configuration)
-jvb:
-  # 1.2.3.4 being one of the IP of the ingress controller
-  publicIPs:
-    - 1.2.3.4
-
-```
-
-Again in this case, only one jvb will work in this case.
-
-### Option 5: Bring your own setup
-
-There are multiple other possibilities combining the available parameters, depending of your cluster/network setup.
-
+### Option 2: ???
+There are no other approved options.
 
 ## Recording and streaming support
 
@@ -318,6 +260,8 @@ Parameter | Description | Default
 `web.extraEnvs` | Map containing additional environment variable to web pods | `{}`
 `web.livenessProbe` | Map that holds the liveness probe, you can add parameters such as timeout or retries following the Kubernetes spec | A livenessProbe map
 `web.readinessProbe` | Map that holds the readiness probe, you can add parameters such as timeout or retries following the Kubernetes spec | A readinessProbe map
+`web.overlay.enabled` | Boolean to enable or disable the Joona overlay | `false`
+`web.overlay.proxy.replicas` | Number of replicas for the Joona overlay proxy | `1`
 `tz` | System Time Zone | `Europe/Amsterdam`
 
 ## Package
