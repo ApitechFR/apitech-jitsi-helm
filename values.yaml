@@ -1,6 +1,7 @@
-# Default values for jitsi-meet.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+### Valeurs par défaut pour le chart jitsi-meet
+### Veiller à bien vérifier l'ensemble des paramètres.
+### La plupart des valeurs qui ne sont pas accompagnées d'un commentaire en français devraient rester inchangées.
+### Les valeurs à modifier contiennent par "CHANGEME" ou "APITECH".
 
 global:
   # Set your cluster's DNS domain here.
@@ -25,9 +26,9 @@ enableAuth: false
 enableGuests: true
 # Where Jitsi Web UI is made available
 # such as jitsi.example.com
-publicURL: ""
+publicURL: "CHANGEME.example.com"
 
-tz: Europe/Amsterdam
+tz: Europe/Paris
 
 image:
   pullPolicy: IfNotPresent
@@ -45,7 +46,7 @@ image:
 websockets:
   ## Colibri (JVB signalling):
   colibri:
-    enabled: false
+    enabled: true
   ## XMPP (Prosody signalling):
   xmpp:
     enabled: false
@@ -77,26 +78,59 @@ web:
   service:
     type: ClusterIP
     port: 80
-    ## If you want to expose the Jitsi Web service directly
-    #  (bypassing the Ingress Controller), use this:
-    #
-    # type: NodePort
-    # nodePort: 30580
-    # port: 80
     externalIPs: []
 
+
   ingress:
-    enabled: false
-    # ingressClassName: "nginx-ingress-0"
-    annotations: {}
-      # kubernetes.io/tls-acme: "true"
+    enabled: true
+    ingressClassName: "nginx"
+    annotations: 
+      ## APITECH : Annotations génriques, ne devraient pas être modifiées
+      nginx.org/proxy-read-timeout: "3600"
+      nginx.org/proxy-send-timeout: "3600"
+      nginx.org/server-snippet: |
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+      acme.cert-manager.io/http01-edit-in-place: "true"
+      ## APITECH : Ici, bien spécifier le cluster-issuer
+      cert-manager.io/cluster-issuer: letsencrypt-staging
     hosts:
-    - host: jitsi.local
-      paths: ['/']
-    tls: []
-    #  - secretName: jitsi-web-certificate
-    #    hosts:
-    #      - jitsi.local
+    - host: CHANGEME.example.com
+      paths:
+        - /
+    tls:
+     - secretName: CHANGEME-tls
+       hosts:
+         - CHANGEME.example.com
+
+  ## APITECH : Paramètres de l'overlay Joona
+  #  Image docker à build à partir du dépôt.
+  overlay:
+    enabled: true
+    # Exemple: image: "example-registry/jitsi-web-overlay"
+    image: "CHANGEME"
+    imagePullPolicy: IfNotPresent
+    extraVolumeMounts: []
+    service:
+      type: ClusterIP
+      port: 3000
+      externalIPs: []
+
+    ## APITECH : Le proxy prend le rôle du reverse proxy présent dans les VMs jitsi-web.
+    # Indissociabe de l'overlay
+    proxy:
+      replicas: 1
+      image:
+        repository: nginx
+        tag: stable
+        pullPolicy: IfNotPresent
+      service:
+        type: ClusterIP
+        port: 80
+        externalIPs: []
+      extraVolumeMounts: []
+      extraVolumes: []
+      
 
   # Useful for ingresses that don't support http-to-https redirect by themself, (namely: GKE),
   httpRedirect: false
@@ -204,42 +238,50 @@ jvb:
     user: jvb
     password:
 
-  ## Set public IP addresses to be advertised by JVB.
-  #  You can specify your nodes' IP addresses,
-  #  or IP addresses of proxies/LoadBalancers used for your
-  #  Jitsi Meet installation. Or both!
-  #
-  #  Note that only the first IP address will be used for legacy
-  #  `DOCKER_HOST_ADDRESS` environment variable.
-  #
-  # publicIPs:
-  #   - 1.2.3.4
-  #   - 5.6.7.8
-  ## Alternative option: auto-detect Node's external IP address.
-  #  Recommended for OCTO setups (with either NodePort service
-  #  or hostPort enabled) where every JVB pod should announce it's
-  #  own IP address only.
+  ## APITECH : Le fonctionnement des JVBs est assez spécial. Ici, vous devez __impérativement__ 
+  # spécifier autant d'IP publiques que de JVBs déployés (cf. jvb.replicaCount).
+  publicIPs:
+    - 1.2.3.4 # CHANGEME
+    - 123.45.67.89 # CHANGEME
+
+  # APITECH : Laisser cette valeur à false, car nous n'utilisons pas de NodePort
   useNodeIP: false
   ## Use a STUN server to help some users punch through some
   #  especially nasty NAT setups. Usually makes sense for P2P calls.
   stunServers: 'meet-jit-si-turnrelay.jitsi.net:443'
+  extraVolumeMounts: []
+  extraVolumes: []
   ## Try to use the hostPort feature:
   #  (might not be supported by some clouds or CNI engines)
-  useHostPort: false
+  # useHostPort: true
   ## Use host's network namespace:
   #  (not recommended, but might help for some cases)
-  useHostNetwork: false
+  # useHostNetwork: false
   ## UDP transport port:
-  UDPPort: 10000
+  # UDPPort: 10000
   ## Use a pre-defined external port for NodePort or LoadBalancer service,
   #  if needed. Will allocate a random port from allowed range if unset.
   #  (Default NodePort range for K8s is 30000-32767)
   # nodePort: 10000
+  # nodeportPrefix: 303
+
   service:
-    enabled:
-    type: ClusterIP
+    enabled: true
+    type: LoadBalancer
     externalTrafficPolicy: Cluster
-    externalIPs: []
+    
+    ## APITECH : Ces valeurs servent à construire les IPs LoadBalancer (internes au cluster!) des JVBs.
+    # Veiller à ne pas écraser les IPs d'autres services LoadBalancer.
+    # externalIPsPrefix est le préfixe des IPs (trois premiers octets),
+    # et firstExternalIPLastOctet est le dernier octet de la première IP.
+    #  Exemple: externalIPsPrefix: 172.16.0, firstExternalIPLastOctet: 1
+    #  donnera les IPs suivantes:
+    #  - 172.16.0.1
+    #  - 172.16.0.2
+    # etc.
+    externalIPsPrefix: 172.16.0 # CHANGEME
+    firstExternalIPLastOctet: 1
+
     ## If type is set to LoadBalancer and the cluster is dual stack, ipFamilyPolicy can be set to enable dual stack
     # addressing for the service.
     # ipFamilyPolicy: PreferDualStack
@@ -272,12 +314,21 @@ jvb:
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
-  resources: {}
+  ## APITECH : Ressources du JVB.
+  #  Valeurs ajustables selon le besoin.
+  resources: 
+      requests:
+        cpu: 3000m
+        memory: 3000Mi
+      limits:
+        cpu: 3500m
+        memory: 3500Mi
   nodeSelector: {}
   tolerations: []
   affinity: {}
   extraEnvs: {}
 
+  ## APITECH : Pas encore testé, mais a l'air intéressant.
   metrics:
     enabled: false
     image:
@@ -306,6 +357,8 @@ jvb:
       labels:
         grafana_dashboard: "1"
       annotations: {}
+
+## APITECH : Encore moins testé, et je suis quasi sûr que ça cassera.
 octo:
   enabled: false
 
@@ -524,7 +577,7 @@ prosody:
       name: '{{ include "prosody.fullname" . }}-common'
   image:
     repository: jitsi/prosody
-    tag: stable-10133
+    tag: stable-10314
 
   # service:
   #   ports:
