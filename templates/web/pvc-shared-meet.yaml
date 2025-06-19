@@ -1,0 +1,15 @@
+{{- if .Values.web.overlay.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "jitsi-meet.web.fullname" . }}-shared-meet
+  labels:
+    {{- include "jitsi-meet.web.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: "longhorn"
+{{- end -}}

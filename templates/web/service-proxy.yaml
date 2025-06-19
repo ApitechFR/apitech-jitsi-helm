@@ -1,0 +1,17 @@
+{{- if .Values.web.overlay.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "jitsi-meet.web.fullname" . }}-proxy
+  labels:
+    {{- include "jitsi-meet.web.proxy.selectorLabels" . | nindent 4 }}
+spec:
+  type: {{ .Values.web.overlay.proxy.service.type }}
+  ports:
+    - port: {{ .Values.web.overlay.proxy.service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "jitsi-meet.web.proxy.selectorLabels" . | nindent 4 }}
+
+{{- end -}}

@@ -1,0 +1,94 @@
+{{- if .Values.web.overlay.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "jitsi-meet.web.fullname" . }}-proxy
+data:
+  nginx.conf: |
+    events {}
+
+    http {
+      server {
+        listen 80;
+
+        location = /external_api.js {
+          proxy_pass http://{{ include "jitsi-meet.web.fullname" . }}:{{ .Values.web.service.port }};
+          proxy_ssl_verify off;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+
+        location = /config.js {
+          proxy_pass http://{{ include "jitsi-meet.web.fullname" . }}:{{ .Values.web.service.port }};
+          proxy_ssl_verify off;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+
+        location = /interface_config.js {
+          proxy_pass http://{{ include "jitsi-meet.web.fullname" . }}:{{ .Values.web.service.port }};
+          proxy_ssl_verify off;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+
+        location = /favicon.ico {
+          proxy_pass http://{{ include "jitsi-meet.web.fullname" . }}:{{ .Values.web.service.port }};
+          proxy_ssl_verify off;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+
+        location = /http-bind {
+          proxy_pass http://{{ include "jitsi-meet.prosody.fullname" . }}:5280/http-bind;
+          proxy_set_header X-Forwarded-For $remote_addr;
+          proxy_set_header Host $http_host;
+        }
+
+        location = /xmpp-websocket {
+          proxy_pass http://{{ include "jitsi-meet.prosody.fullname" . }}:5280/xmpp-websocket;
+
+          proxy_set_header X-Forwarded-For $remote_addr;
+          proxy_set_header Host $http_host;
+
+          proxy_http_version 1.1;
+          proxy_buffer_size 128k;
+          proxy_buffers 4 256k;
+          proxy_busy_buffers_size  256k;
+          proxy_set_header Connection "upgrade";
+          tcp_nodelay on;
+        }
+
+        location ~ ^/colibri-ws/(\d+\.\d+\.\d+\.\d+)/(.*) {
+          proxy_pass http://$1:9090$request_uri;
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+          tcp_nodelay on;
+        }
+
+        set $try_location @jitsi;
+        if ($http_user_agent ~* ".*electron.*") {
+          set $try_location @root_path;
+        }
+
+        location / {
+          ssi on;
+          allow all;
+          root /usr/share/jitsi-meet;
+          try_files $uri $try_location;
+        }
+
+        ### JITSI APP
+        location @jitsi {
+          ssi on;
+          allow all;
+          proxy_set_header X-Forwarded-For $remote_addr;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+          proxy_set_header Host $host;
+          proxy_pass http://{{ include "jitsi-meet.web.fullname" . }}-overlay:{{ .Values.web.overlay.service.port }};
+        }
+      }
+    }
+{{- end -}}
