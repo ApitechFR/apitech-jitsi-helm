@@ -20,8 +20,16 @@ spec:
           image: {{ .Values.web.overlay.proxy.image.repository }}:{{ .Values.web.overlay.proxy.image.tag }}
           imagePullPolicy: {{ .Values.web.overlay.proxy.image.pullPolicy }}
           ports:
-            - containerPort: 80
+            - containerPort: {{ .Values.web.overlay.proxy.service.port }}
               name: http
+          {{- with .Values.web.livenessProbe }}
+          livenessProbe:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.web.readinessProbe }}
+          readinessProbe:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: nginx-config
               mountPath: /etc/nginx/nginx.conf
