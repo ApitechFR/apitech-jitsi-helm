@@ -111,6 +111,11 @@ web:
     image: "CHANGEME"
     imagePullPolicy: IfNotPresent
     extraVolumeMounts: []
+    ## APITECH : Volume partagé pour l'overlay.
+    #  Doit être ReadWriteMany pour permettre à tous les pods web d'accéder
+    sharedMeetStorageSize: 1Gi
+    #  Utilisation de la storageClass single-replica OK ici, pas de données critiques.
+    sharedMeetStorageClass: "longhorn-single-replica"
     service:
       type: ClusterIP
       port: 3000

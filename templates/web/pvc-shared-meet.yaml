@@ -10,6 +10,6 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 500Mi
-  storageClassName: "longhorn"
+      storage: "{{ .Values.web.overlay.sharedMeetStorageSize }}"
+  storageClassName: "{{ .Values.web.overlay.sharedMeetStorageClass }}"
 {{- end -}}
