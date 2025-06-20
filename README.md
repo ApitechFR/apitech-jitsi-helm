@@ -10,8 +10,8 @@ Conferences that you use as a standalone app or embed in your web application. -
 ## TL;DR;
 
 ```bash
-helm repo add jitsi https://jitsi-contrib.github.io/jitsi-helm/
-helm install myjitsi jitsi/jitsi-meet
+helm repo add apitech-jitsi https://apitechfr.github.io/apitech-jitsi-helm/
+helm install jitsi apitech-jitsi/jitsi-meet -f values.yaml -f overlay-values.yaml -n <namespace>
 ```
 
 ## Introduction
