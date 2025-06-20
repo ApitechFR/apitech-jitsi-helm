@@ -24,3 +24,4 @@ data:
   ENABLE_OCTO: "1"
   OCTO_BRIDGE_SELECTION_STRATEGY: "SplitBridgeSelectionStrategy"
   {{- end }}
+  JICOFO_ENABLE_REST: "1"
