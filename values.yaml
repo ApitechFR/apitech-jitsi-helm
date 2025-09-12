@@ -108,14 +108,16 @@ web:
   overlay:
     enabled: true
     # Exemple: image: "example-registry/jitsi-web-overlay"
-    image: "CHANGEME"
-    imagePullPolicy: IfNotPresent
+    image:
+      repository: "CHANGEME"
+      tag: "latest"
+      pullPolicy: IfNotPresent
     extraVolumeMounts: []
     ## APITECH : Volume partagé pour l'overlay.
     #  Doit être ReadWriteMany pour permettre à tous les pods web d'accéder
     sharedMeetStorageSize: 1Gi
     #  Utilisation de la storageClass single-replica OK ici, pas de données critiques.
-    sharedMeetStorageClass: "longhorn-single-replica"
+    sharedMeetStorageClass: "longhorn-single-no-retain"
     service:
       type: ClusterIP
       port: 3000
@@ -555,6 +557,33 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name:
 
+## APITECH : Le serveur TURN est utilisé pour les appels P2P et les appels avec des clients SIP.
+turn:
+  enabled: true
+  image:
+    repository: coturn/coturn
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  externalIP: "1.2.3.4" # CHANGEME
+  serverName: "meet.jitsi" # CHANGEME
+
+  xmpp:
+    password:
+
+  ssl:
+    ## APITECH : Configuration des certificats TLS pour le serveur TURN.
+    #  S'il faut générer les certificats TLS pour le serveur TURN, définir à true.
+    #  Si false, le chart s'attend à ce que les certificats soient présents dans le secret `jitsi-turn-tls`.
+    #  Dans ce cas, le secret doit contenir les clés 'tls.crt' et 'tls.key'.
+    generate: true
+    secretName: jitsi-turn-tls
+    issuer: letsencrypt-staging # CHANGEME
+
+
+  ## APITECH : Le serveur TURN est configuré pour utiliser les IPs des JVBs.
+  #  Il est donc important de veiller à ce que les JVBs soient déployés avant le TURN.
+
 xmpp:
   domain: meet.jitsi
   authDomain:
@@ -578,6 +607,8 @@ prosody:
       name: '{{ include "prosody.fullname" . }}-jigasi'
   - secretRef:
       name: '{{ include "prosody.fullname" . }}-jvb'
+  - secretRef:
+      name: '{{ include "prosody.fullname" . }}-turn'
   - configMapRef:
       name: '{{ include "prosody.fullname" . }}-common'
   image:
