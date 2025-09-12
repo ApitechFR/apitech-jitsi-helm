@@ -1,0 +1,18 @@
+{{- if .Values.turn.enabled -}}
+{{- if .Values.turn.ssl.generate -}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "jitsi-meet.turn.fullname" . }}-certs
+  labels:
+    {{- include "jitsi-meet.turn.labels" . | nindent 4 }}
+spec:
+  secretName: {{ .Values.turn.ssl.secretName | default (include "jitsi-meet.turn.fullname" .) }}-certs
+  commonName: {{ .Values.turn.serverName }}
+  dnsNames:
+    - {{ .Values.turn.serverName }}
+  issuerRef:
+    kind: ClusterIssuer
+    name: {{ .Values.turn.ssl.issuer }}
+{{- end -}}
+{{- end -}}

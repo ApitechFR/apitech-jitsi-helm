@@ -1,0 +1,37 @@
+{{- if .Values.turn.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "jitsi-meet.turn.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.turn.labels" . | nindent 4 }}
+  annotations:
+  {{- range $key, $value := .Values.turn.service.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+spec:
+  selector:
+    {{- include "jitsi-meet.turn.selectorLabels" . | nindent 4 }}
+    # app: {{ include "jitsi-meet.turn.fullname" . }}
+  type: {{ .Values.turn.service.type }}
+  externalTrafficPolicy: {{ .Values.turn.service.externalTrafficPolicy }}
+  ports:
+    - name: turn-tls
+      port: {{ .Values.turn.service.tlsPort }}
+      targetPort: {{ .Values.turn.service.tlsPort }}
+      protocol: TCP
+    - name: turn-tls-udp
+      port: {{ .Values.turn.service.tlsPort }}
+      targetPort: {{ .Values.turn.service.tlsPort }}
+      protocol: UDP
+    - name: turn
+      port: {{ .Values.turn.service.port }}
+      targetPort: {{ .Values.turn.service.port }}
+      protocol: TCP
+    - name: turn-udp
+      port: {{ .Values.turn.service.port }}
+      targetPort: {{ .Values.turn.service.port }}
+      protocol: UDP
+
+  loadBalancerIP: {{ .Values.turn.service.externalIP }}
+{{- end -}}

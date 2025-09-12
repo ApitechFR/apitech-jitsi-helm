@@ -1,0 +1,54 @@
+{{- if .Values.turn.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jitsi-meet.turn.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.turn.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+        {{- include "jitsi-meet.turn.selectorLabels" . | nindent 8 }}
+  template:
+    metadata:
+        labels:
+          {{- include "jitsi-meet.turn.selectorLabels" . | nindent 10 }}
+    spec:
+      volumes:
+        - name: turn-certs
+          secret:
+            secretName: {{ include "jitsi-meet.turn.fullname" . }}-certs
+        - name: turn-config
+          configMap:
+            name: {{ include "jitsi-meet.turn.fullname" . }}
+      containers:
+        - name: turnserver
+          image: {{ .Values.turn.image.repository }}:{{ .Values.turn.image.tag }}
+          imagePullPolicy: {{ .Values.turn.image.pullPolicy | default "IfNotPresent" }}
+          ports:
+            - name: turn
+              containerPort: {{ .Values.turn.port | default 3478 }}
+              protocol: UDP
+            - name: turn-tls
+              containerPort: {{ .Values.turn.tlsPort | default 5349 }}
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: {{ include "call-nested" (list . "prosody" "prosody.fullname") }}-turn
+          volumeMounts:
+            - name: turn-config
+              mountPath: /etc/turnserver.conf
+              subPath: turnserver.conf
+            - name: turn-certs
+              mountPath: /etc/ssl/certs
+              readOnly: true        
+      volumes:
+        - name: turn-config
+          configMap:
+            name: {{ include "jitsi-meet.turn.fullname" . }}
+        - name: turn-certs
+          secret:
+            secretName: {{ .Values.turn.ssl.secretName | default (include "jitsi-meet.turn.fullname" .) }}-certs
+
+{{- end -}}

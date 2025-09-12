@@ -46,6 +46,10 @@ spec:
               name: {{ include "prosody.fullname" . }}
           - secretRef:
               name: {{ include "prosody.fullname" . }}
+          {{- if .Values.turn.enabled }}
+          - secretRef:
+              name: {{ include "prosody.fullname" . }}-turn
+          {{- end }}
           {{- range .Values.extraEnvFrom }}
           - {{ tpl (toYaml . ) $ | indent 12 | trim }}
           {{- end }}
@@ -54,8 +58,14 @@ spec:
           - {{ tpl (toYaml . ) $ | indent 12 | trim }}
           {{- end }}
           {{- end }}
-          {{- if or (.Values.extraEnvs) (.Values.metrics.enabled) }}
+          {{- if or (.Values.extraEnvs) (.Values.metrics.enabled) (.Values.turn.enabled) }}
           env:
+          {{- if .Values.turn.enabled }}
+          - name: TURNS_HOST
+            value: "{{ .Values.turn.host }}"
+          - name: TURNS_PORT
+            value: "{{ .Values.turn.port }}"
+          {{- end }}
           {{- if .Values.metrics.enabled }}
           - name: PROSODY_ENABLE_METRICS
             value: "true"

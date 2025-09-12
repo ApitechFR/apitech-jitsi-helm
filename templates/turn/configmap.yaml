@@ -1,0 +1,30 @@
+{{- if .Values.turn.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "jitsi-meet.turn.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.turn.labels" . | nindent 4 }}
+data:
+  turnserver.conf: |
+    # Jitsi Meet TURN server configuration
+    listening-port={{ .Values.turn.port | default 3478 }}
+    tls-listening-port={{ .Values.turn.tlsPort | default 5349 }}
+    external-ip={{ .Values.turn.externalIP }}
+    use-auth-secret
+    static-auth-secret={{ .Values.turn.xmpp.password }}
+    server-name={{ .Values.turn.serverName }}
+    realm={{ .Values.turn.serverName }}
+    no-udp
+    no-tcp-relay
+    pkey=/etc/ssl/certs/tls.key
+    cert=/etc/ssl/certs/tls.crt
+    syslog
+    no-multicast-peers
+    no-cli
+    no-tlsv1_1
+    no-tlsv1
+    no-rfc5780
+    no-stun-backward-compatibility
+    response-origin-only-with-rfc5780
+{{- end -}}
