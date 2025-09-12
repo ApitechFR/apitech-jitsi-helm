@@ -22,8 +22,8 @@ spec:
     #   protocol: UDP
     #   name: rtp-udp
 
-    - port: 10000
-      targetPort: 10000
+    - port: {{ $.Values.jvb.service.udpPort }}
+      targetPort: {{ $.Values.jvb.service.udpPort }}
       protocol: UDP
       name: rtp-udp
       
