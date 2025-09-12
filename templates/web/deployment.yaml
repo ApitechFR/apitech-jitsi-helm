@@ -131,8 +131,8 @@ spec:
         {{- if .Values.web.overlay.enabled }}
         # Custom jitsi overlay
         - name: {{ .Chart.Name }}-overlay
-          image: "{{ .Values.web.overlay.image }}"
-          imagePullPolicy: {{ .Values.web.overlay.imagePullPolicy | default "IfNotPresent" }}
+          image: "{{ .Values.web.overlay.image.repository }}:{{ .Values.web.overlay.image.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.web.overlay.image.pullPolicy | default "IfNotPresent" }}
           envFrom:
           - configMapRef:
               name: {{ include "jitsi-meet.web.fullname" . }}-overlay
