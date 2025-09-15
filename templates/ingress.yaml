@@ -3,7 +3,7 @@
 {{- $fullName := "" -}}
 {{- $svcPort := 0 -}}
 
-{{- if .Values.web.overlay.enabled -}}
+{{- if and .Values.web.overlay.enabled (eq .Values.web.overlay.mode "v1") -}}
   {{- $_ := set $ "fullName" (printf "%s-proxy" (include "jitsi-meet.web.fullname" .)) -}}
   {{- $_ := set $ "svcPort" .Values.web.overlay.proxy.service.port -}}
 {{- else -}}

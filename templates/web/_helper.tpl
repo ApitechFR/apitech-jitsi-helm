@@ -13,6 +13,11 @@ app.kubernetes.io/component: web
 app.kubernetes.io/component: web
 {{- end -}}
 
+{{- define "jitsi-meet.web.overlay.selectorLabels" -}}
+{{ include "jitsi-meet.selectorLabels" . }}
+app.kubernetes.io/component: web-overlay
+{{- end -}}
+
 {{- define "jitsi-meet.web.proxy.selectorLabels" -}}
 {{ include "jitsi-meet.selectorLabels" . }}
 app.kubernetes.io/component: web-proxy
