@@ -127,23 +127,8 @@ spec:
             {{- with .Values.web.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
-            
-        {{- if .Values.web.overlay.enabled }}
-        # Custom jitsi overlay
-        - name: {{ .Chart.Name }}-overlay
-          image: "{{ .Values.web.overlay.image.repository }}:{{ .Values.web.overlay.image.tag | default "latest" }}"
-          imagePullPolicy: {{ .Values.web.overlay.image.pullPolicy | default "IfNotPresent" }}
-          envFrom:
-          - configMapRef:
-              name: {{ include "jitsi-meet.web.fullname" . }}-overlay
-          volumeMounts:
-            - name: shared-meet
-              mountPath: /usr/share/jitsi-meet
-              readOnly: true
-          {{- with .Values.web.overlay.extraVolumeMounts }}
-          {{- toYaml . | nindent 10 }}
-          {{- end }}
 
+      {{- if and .Values.web.overlay.enabled (eq .Values.web.overlay.mode "v1") }}
       initContainers:
         - name: {{ .Chart.Name }}-copy-jitsi-meet
           image: "{{ .Values.web.image.repository }}:{{ default .Chart.AppVersion .Values.web.image.tag }}"
@@ -154,6 +139,7 @@ spec:
             - name: shared-meet
               mountPath: /jitsi-meet-volume
       {{- end }}
+
 
       {{- with .Values.web.nodeSelector }}
       nodeSelector:
@@ -201,11 +187,11 @@ spec:
                 path: ssl.conf
               - key: system-config.js
                 path: system-config.js
-        {{- if .Values.web.overlay.enabled }}
+        {{- if and .Values.web.overlay.enabled (eq .Values.web.overlay.mode "v1") }}
         - name: shared-meet
           persistentVolumeClaim:
             claimName: {{ include "jitsi-meet.web.fullname" . }}-shared-meet
-        {{- end }}
+        {{- end }}  
         {{- with .Values.web.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

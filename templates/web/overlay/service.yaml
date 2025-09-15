@@ -1,4 +1,4 @@
-{{- if .Values.web.overlay.enabled -}}
+{{- if and .Values.web.overlay.enabled (eq .Values.web.overlay.mode "v1") -}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -12,5 +12,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "jitsi-meet.web.selectorLabels" . | nindent 4 }}
+    {{- include "jitsi-meet.web.overlay.selectorLabels" . | nindent 4 }}
 {{- end -}}

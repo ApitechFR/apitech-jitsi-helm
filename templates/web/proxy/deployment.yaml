@@ -1,4 +1,4 @@
-{{- if .Values.web.overlay.enabled -}}
+{{- if and .Values.web.overlay.enabled (eq .Values.web.overlay.mode "v1") -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
