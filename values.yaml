@@ -25,7 +25,9 @@ global:
 ### Nécessaire pour le prosody : il utilise un .Values différent, dont la racine est .Values.prosody
 authConfig: &authConfig
   enableAuth: false
-  # authType: "internal" # Optionnel : "internal", "jwt", "hybrid_matrix_token"
+  # Optionnel
+  # "internal", "jwt", "hybrid_matrix_token"
+  # authType: "internal"
   jwt:
     appId: "app_id_jwt"
     secret: "secret_jwt"
