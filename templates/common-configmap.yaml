@@ -5,7 +5,11 @@ metadata:
   labels:
     {{- include "jitsi-meet.labels" . | nindent 4 }}
 data:
-  ENABLE_AUTH: {{ ternary "1" "0" .Values.enableAuth | quote }}
+  {{/*ENABLE_AUTH: {{ ternary "1" "0" .Values.enableAuth | quote }}*/}}
+  ENABLE_AUTH: {{ .Values.enableAuth | quote }}
+  AUTH_TYPE: {{ .Values.authType | quote }}
+  JWT_APP_ID: {{ .Values.jwt.appId | quote }}
+  JWT_APP_SECRET: {{ .Values.jwt.secret | quote }}
   ENABLE_GUESTS: {{ ternary "1" "0" .Values.enableGuests | quote }}
   PUBLIC_URL: {{ include "jitsi-meet.publicURL" . }}
   XMPP_DOMAIN: {{ include "jitsi-meet.xmpp.domain" . }}

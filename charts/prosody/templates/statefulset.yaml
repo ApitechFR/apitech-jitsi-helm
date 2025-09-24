@@ -60,6 +60,17 @@ spec:
           {{- end }}
           {{- if or (.Values.extraEnvs) (.Values.metrics.enabled) (.Values.turn.enabled) }}
           env:
+          {{- if .Values.enableAuth }}
+          - name: ENABLE_AUTH
+            {{/*value: "{{ ternary "1" "0" .Values.enableAuth }}"*/}}
+            value: "{{ .Values.enableAuth }}"
+          - name: AUTH_TYPE
+            value: "{{ .Values.authType }}"
+          - name: JWT_APP_ID
+            value: "{{ .Values.jwt.appId }}"
+          - name: JWT_APP_SECRET
+            value: "{{ .Values.jwt.secret }}"
+          {{- end }}
           {{- if .Values.turn.enabled }}
           - name: TURNS_HOST
             value: "{{ .Values.turn.host }}"
