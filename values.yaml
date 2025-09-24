@@ -3,6 +3,8 @@
 ### La plupart des valeurs qui ne sont pas accompagnées d'un commentaire en français devraient rester inchangées.
 ### Les valeurs à modifier contiennent par "CHANGEME" ou "APITECH".
 
+### Remarque supplémentaire : Définir les mots de passe xmpp (prosody.xmpp.password, jicofo.xmpp.password, jvb.xmpp.password, jigasi.xmpp.password, jibri.xmpp.password et jibri.recorder.password) règle un bug qui force à redémarrer tous les composants après un upgrade.
+
 global:
   # Set your cluster's DNS domain here.
   # "cluster.local" should work for most environments.
@@ -18,14 +20,26 @@ global:
     #      name: '{{ include "prosody.fullname" . }}-overrides'
     #      optional: true
 
+### APITECH : Configuration de l'authentification
+### Cette syntaxe permet de définir un bloc réutilisable à plusieurs endroits
+### Nécessaire pour le prosody : il utilise un .Values différent, dont la racine est .Values.prosody
+authConfig: &authConfig
+  enableAuth: false
+  # authType: "internal" # Optionnel : "internal", "jwt", "hybrid_matrix_token"
+  jwt:
+    appId: "app_id_jwt"
+    secret: "secret_jwt"
+  enableGuests: true
+
+<<: *authConfig
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-enableAuth: false
-enableGuests: true
 # Where Jitsi Web UI is made available
 # such as jitsi.example.com
+### APITECH : Cette URL n'est PAS celle de l'overlay mais celle du Jitsi SANS OVERLAY.
 publicURL: "CHANGEME.example.com"
 
 tz: Europe/Paris
@@ -49,7 +63,7 @@ websockets:
     enabled: true
   ## XMPP (Prosody signalling):
   xmpp:
-    enabled: false
+    enabled: true
 
 web:
   replicaCount: 1
@@ -80,7 +94,7 @@ web:
     port: 80
     externalIPs: []
 
-
+  ## APITECH : Ingress pour exposer le Jitsi SANS OVERLAY.
   ingress:
     enabled: true
     ingressClassName: "nginx"
@@ -93,7 +107,7 @@ web:
         proxy_set_header Connection "Upgrade";
       acme.cert-manager.io/http01-edit-in-place: "true"
       ## APITECH : Ici, bien spécifier le cluster-issuer
-      cert-manager.io/cluster-issuer: letsencrypt-staging
+      cert-manager.io/cluster-issuer: CHANGEME
     hosts:
     - host: CHANGEME.example.com
       paths:
@@ -102,42 +116,6 @@ web:
      - secretName: CHANGEME-tls
        hosts:
          - CHANGEME.example.com
-
-  ## APITECH : Paramètres de l'overlay Joona
-  #  Image docker à build à partir du dépôt.
-  overlay:
-    enabled: true
-    # Exemple: image: "example-registry/jitsi-web-overlay"
-    image:
-      repository: "CHANGEME"
-      tag: "latest"
-      pullPolicy: IfNotPresent
-    extraVolumeMounts: []
-    ## APITECH : Volume partagé pour l'overlay.
-    #  Doit être ReadWriteMany pour permettre à tous les pods web d'accéder
-    sharedMeetStorageSize: 1Gi
-    #  Utilisation de la storageClass single-replica OK ici, pas de données critiques.
-    sharedMeetStorageClass: "longhorn-single-no-retain"
-    service:
-      type: ClusterIP
-      port: 3000
-      externalIPs: []
-
-    ## APITECH : Le proxy prend le rôle du reverse proxy présent dans les VMs jitsi-web.
-    # Indissociabe de l'overlay
-    proxy:
-      replicas: 1
-      image:
-        repository: nginx
-        tag: stable
-        pullPolicy: IfNotPresent
-      service:
-        type: ClusterIP
-        port: 80
-        externalIPs: []
-      extraVolumeMounts: []
-      extraVolumes: []
-      
 
   # Useful for ingresses that don't support http-to-https redirect by themself, (namely: GKE),
   httpRedirect: false
@@ -192,6 +170,76 @@ web:
   tolerations: []
 
   affinity: {}
+
+  ## APITECH : Paramètres de l'overlay Joona
+  #  Image docker à build à partir du dépôt.
+overlay:
+  enabled: true
+  ## APITECH : Version de l'overlay Joona.
+  mode: "v1" # v1, v3
+  # Exemple: image: "example-registry/jitsi-web-overlay"
+  v1:
+    image:
+      replicas: 1
+      repository: "CHANGEME"
+      tag: "CHANGEME"
+      pullPolicy: IfNotPresent
+    extraVolumeMounts: []
+    ## APITECH : Volume partagé pour l'overlay.
+    #  Doit être ReadWriteMany pour permettre à tous les pods web d'accéder
+    sharedMeetStorageSize: 1Gi
+    ## APITECH : Utilisation d'une storageClass single-replica préférable ici, pas de données critiques.
+    sharedMeetStorageClass: "CHANGEME" # ex: longhorn-single-no-retain
+    service:
+      type: ClusterIP
+      port: 3000
+      externalIPs: []
+    ## APITECH : Le proxy prend le rôle du reverse proxy présent dans les VMs jitsi-web.
+    # Indissociabe de l'overlay
+    proxy:
+      replicas: 2
+      image:
+        repository: nginx
+        tag: stable
+        pullPolicy: IfNotPresent
+      service:
+        type: ClusterIP
+        port: 80
+        externalIPs: []
+      extraVolumeMounts: []
+      extraVolumes: []
+    ### APITECH: Gestion des assets
+    assets:
+      ### Dossier local contenant les assets
+      ### Les assets seront montés dans le chemin /assets
+      ### Ce dossier doit contenir au minimum:
+      # - logo.png (logo dans la barre du haut)
+      # - rate-image.png (image pour le sondage de fin de conférence)
+      path: "assets"
+      logo: "logo.png"
+      rateImage: "rate-image.png"
+
+  ## APITECH : Ingress pour exposer l'overlay Joona.
+  #  Doit être différent de celui du Jitsi sans overlay.
+  ingress:
+    enabled: true
+    ingressClassName: "nginx"
+    annotations: 
+      ## APITECH : Annotations génriques, ne devraient pas être modifiées
+      nginx.org/proxy-read-timeout: "3600"
+      nginx.org/proxy-send-timeout: "3600"
+      nginx.org/server-snippet: |
+      acme.cert-manager.io/http01-edit-in-place: "true"
+    ## APITECH : Ici, bien spécifier le cluster-issuer
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+    - host: CHANGEME.example.com
+      paths:
+        - /
+    tls:
+     - secretName: CHANGEME-tls
+       hosts:
+         - CHANGEME.example.com
 
 jicofo:
   replicaCount: 1
@@ -276,6 +324,7 @@ jvb:
     enabled: true
     type: LoadBalancer
     externalTrafficPolicy: Cluster
+    udpPort: 10000
     
     ## APITECH : Ces valeurs servent à construire les IPs LoadBalancer (internes au cluster!) des JVBs.
     # Veiller à ne pas écraser les IPs d'autres services LoadBalancer.
@@ -392,20 +441,26 @@ jigasi:
     user: jigasi
     password:
 
-  livenessProbe:
-    httpGet:
-      path: /about/health
-      port: 8788
-      httpHeaders:
-        - name: Accept
-          value: application/json
-  readinessProbe:
-    httpGet:
-      path: /about/health
-      port: 8788
-      httpHeaders:
-        - name: Accept
-          value: application/json
+  ## APITECH : Avec la version actuelle de Jigasi, les probes sont cassées (les routes sont en écoute sur le loopback).
+  # TODO : Remettre les probes une fois le problème corrigé dans l'image officielle.
+  livenessProbe: null
+  readinessProbe: null
+  # livenessProbe: 
+  #   httpGet:
+  #     path: /about/health
+  #     host: 127.0.0.1
+  #     port: 8788
+  #     httpHeaders:
+  #       - name: Accept
+  #         value: application/json
+  # readinessProbe:
+  #   httpGet:
+  #     path: /about/health
+  #     host: 127.0.0.1
+  #     port: 8788
+  #     httpHeaders:
+  #       - name: Accept
+  #         value: application/json
 
   podLabels: {}
   podAnnotations: {}
@@ -461,7 +516,7 @@ jibri:
   ## If disabled, jibri pod will use a transient
   ## emptyDir-backed storage instead.
   persistence:
-    enabled: false
+    enabled: true
     size: 4Gi
     ## Set this to existing PVC name if you have one.
     existingClaim:
@@ -567,6 +622,14 @@ turn:
 
   externalIP: "1.2.3.4" # CHANGEME
   serverName: "meet.jitsi" # CHANGEME
+  
+  service:
+    port: 3478
+    tlsPort: 5349
+    type: LoadBalancer
+    externalTrafficPolicy: Cluster
+    annotations: {}
+    externalIP: "CHANGEME"
 
   xmpp:
     password:
@@ -595,8 +658,13 @@ xmpp:
 extraCommonEnvs: {}
 
 prosody:
+  <<: *authConfig
   enabled: true
   useExternalProsody: false
+  turn:
+    enabled: true
+    host: CHANGEME.example.com
+    port: 443
   server:
   extraEnvFrom:
   - secretRef:
