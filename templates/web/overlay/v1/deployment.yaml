@@ -1,0 +1,72 @@
+{{- if and .Values.overlay.enabled (eq .Values.overlay.mode "v1") -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jitsi-meet.overlay.v1.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.overlay.v1.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.overlay.v1.replicas }}
+  selector:
+    matchLabels:
+      {{- include "jitsi-meet.overlay.v1.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "jitsi-meet.overlay.v1.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        # Custom jitsi overlay
+        - name: {{ .Chart.Name }}-overlay
+          image: "{{ .Values.overlay.v1.image.repository }}:{{ .Values.overlay.v1.image.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.overlay.v1.image.pullPolicy | default "IfNotPresent" }}
+          envFrom:
+          - configMapRef:
+              name: {{ include "jitsi-meet.overlay.v1.fullname" . }}
+          volumeMounts:
+            - name: shared-meet
+              mountPath: /usr/share/jitsi-meet
+              readOnly: true
+          {{ range $path, $_ := .Files.Glob (printf "%s/**" (.Values.overlay.v1.assets.path)) }}
+            - name: assets
+              {{- /* Dans le code de la surcouche, si NODE_ENV est en production il faut monter dans /app/dist/public */}}
+              {{- if eq $.Values.overlay.v1.envValues.NODE_ENV "development" }}
+              mountPath: /app/public/pictures/client/{{ base $path }}
+              {{- else }}
+              mountPath: /app/dist/public/pictures/client/{{ base $path }}
+              {{- end }}
+              subPath: {{ base $path }}
+              readOnly: true
+          {{- end }}
+          {{- with .Values.overlay.v1.extraVolumeMounts }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: {{ include "jitsi-meet.web.fullname" . }}-proxy
+        - name: shared-meet
+          persistentVolumeClaim:
+            claimName: {{ include "jitsi-meet.web.fullname" . }}-shared-meet
+        - name: assets
+          configMap:
+            name: {{ include "jitsi-meet.overlay.v1.fullname" . }}-assets
+            items:
+            {{ range $path, $_ := .Files.Glob (printf "%s/**" (.Values.overlay.v1.assets.path)) }}
+              - key: {{ base $path }}
+                path: {{ base $path }}
+            {{- end }}
+
+      {{- with .Values.web.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.web.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.web.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end -}}

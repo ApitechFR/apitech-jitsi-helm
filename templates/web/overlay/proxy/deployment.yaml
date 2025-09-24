@@ -1,26 +1,26 @@
-{{- if and .Values.web.overlay.enabled (eq .Values.web.overlay.mode "v1") -}}
+{{- if and .Values.overlay.enabled (eq .Values.overlay.mode "v1")  }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "jitsi-meet.web.fullname" . }}-proxy
+  name: {{ include "jitsi-meet.overlay.v1.proxy.fullname" . }}
   labels:
-    {{- include "jitsi-meet.web.labels" . | nindent 4 }}
+    {{- include "jitsi-meet.overlay.v1.proxy.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.web.overlay.proxy.replicas }}
+  replicas: {{ .Values.overlay.v1.proxy.replicas }}
   selector:
     matchLabels:
-      {{- include "jitsi-meet.web.proxy.selectorLabels" . | nindent 6 }}
+      {{- include "jitsi-meet.overlay.v1.proxy.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "jitsi-meet.web.proxy.selectorLabels" . | nindent 8 }}
+        {{- include "jitsi-meet.overlay.v1.proxy.selectorLabels" . | nindent 8 }}
     spec:
       containers:
         - name: proxy
-          image: {{ .Values.web.overlay.proxy.image.repository }}:{{ .Values.web.overlay.proxy.image.tag }}
-          imagePullPolicy: {{ .Values.web.overlay.proxy.image.pullPolicy }}
+          image: {{ .Values.overlay.v1.proxy.image.repository }}:{{ .Values.overlay.v1.proxy.image.tag }}
+          imagePullPolicy: {{ .Values.overlay.v1.proxy.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.web.overlay.proxy.service.port }}
+            - containerPort: {{ .Values.overlay.v1.proxy.service.port }}
               name: http
           {{- with .Values.web.livenessProbe }}
           livenessProbe:
@@ -39,7 +39,7 @@ spec:
       volumes:
         - name: nginx-config
           configMap:
-            name: {{ include "jitsi-meet.web.fullname" . }}-proxy
+            name: {{ include "jitsi-meet.overlay.v1.proxy.fullname"  . }}
         - name: shared-meet
           persistentVolumeClaim:
             claimName: {{ include "jitsi-meet.web.fullname" . }}-shared-meet

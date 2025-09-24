@@ -1,0 +1,21 @@
+{{- if and .Values.overlay.enabled (eq .Values.overlay.mode "v1") -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "jitsi-meet.overlay.v1.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.overlay.v1.labels" . | nindent 4 }}
+data:
+    JITSI_VERSION: 2.0.{{ .Chart.AppVersion | replace "stable-" "" }}
+    JWT_APP_ID: {{ .Values.jwt.appId | quote }}
+    JWT_SECRET: {{ .Values.jwt.secret | quote }}
+    {{- if not .Values.overlay.v1.envValues.TOPBAR_LOGO }}
+    TOPBAR_LOGO: "/pictures/client/{{ .Values.overlay.v1.assets.logo | default "logo.png" }}"
+    {{- end }}
+    {{- if not .Values.overlay.v1.envValues.RATE_IMG_SRC }}
+    RATE_IMG_SRC: "/pictures/client/{{ .Values.overlay.v1.assets.rateImage }}"
+    {{- end }}
+  {{- range $key, $value := .Values.overlay.v1.envValues }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}

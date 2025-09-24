@@ -1,11 +1,15 @@
-{{- if .Values.web.ingress.enabled -}}
+{{- if .Values.overlay.ingress.enabled -}}
 
 {{- $fullName := "" -}}
 {{- $svcPort := 0 -}}
 
-{{- $_ := set $ "fullName" (include "jitsi-meet.web.fullname" .) -}}
-{{- $_ := set $ "svcPort" .Values.web.service.port -}}
-
+{{- if eq .Values.overlay.mode "v1" -}}
+    {{- $_ := set $ "fullName" (printf "%s-proxy" (include "jitsi-meet.overlay.v1.fullname" .)) -}}
+    {{- $_ := set $ "svcPort" .Values.overlay.v1.proxy.service.port -}}
+{{- else if eq .Values.overlay.mode "v3" -}}
+    {{- $_ := set $ "fullName" (include "jitsi-meet.overlay.v3.fullname" .) -}}
+    {{- $_ := set $ "svcPort" .Values.overlay.v3.service.port -}}
+{{- end -}}
 {{- $fullName := $.fullName -}}
 {{- $svcPort := $.svcPort -}}
 
@@ -21,24 +25,28 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- include "jitsi-meet.web.labels" . | nindent 4 }}
-  {{- if or .Values.web.ingress.annotations (and .Values.web.ingress.ingressClassName (semverCompare "<1.19-0" $kubeVersion)) }}
+    {{- if eq .Values.overlay.mode "v1" -}}
+        {{- include "jitsi-meet.overlay.v1.labels" . | nindent 4 }}
+    {{- else if eq .Values.overlay.mode "v3" -}}
+        {{- include "jitsi-meet.overlay.v3.labels" . | nindent 4 }}
+    {{- end -}}
+  {{- if or .Values.overlay.ingress.annotations (and .Values.overlay.ingress.ingressClassName (semverCompare "<1.19-0" $kubeVersion)) }}
   annotations:
-    {{- if and .Values.web.ingress.ingressClassName (semverCompare "<1.19-0" $kubeVersion) }}
-    kubernetes.io/ingress.class: {{ .Values.web.ingress.ingressClassName }}
+    {{- if and .Values.overlay.ingress.ingressClassName (semverCompare "<1.19-0" $kubeVersion) }}
+    kubernetes.io/ingress.class: {{ .Values.overlay.ingress.ingressClassName }}
     {{- end }}
     nginx.org/websocket-services: {{ $fullName }}
-    {{- with .Values.web.ingress.annotations }}
+    {{- with .Values.overlay.ingress.annotations }}
     {{-   toYaml . | nindent 4 }}
     {{- end }}
   {{- end }}
 spec:
-{{- if and .Values.web.ingress.ingressClassName (semverCompare ">=1.19-0" $kubeVersion) }}
-  ingressClassName: {{ .Values.web.ingress.ingressClassName }}
+{{- if and .Values.overlay.ingress.ingressClassName (semverCompare ">=1.19-0" $kubeVersion) }}
+  ingressClassName: {{ .Values.overlay.ingress.ingressClassName }}
 {{- end }}
-{{- if .Values.web.ingress.tls }}
+{{- if .Values.overlay.ingress.tls }}
   tls:
-  {{- range .Values.web.ingress.tls }}
+  {{- range .Values.overlay.ingress.tls }}
     - hosts:
       {{- range .hosts }}
         - {{ . | quote }}
@@ -47,7 +55,7 @@ spec:
   {{- end }}
 {{- end }}
   rules:
-  {{- range .Values.web.ingress.hosts }}
+  {{- range .Values.overlay.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:
