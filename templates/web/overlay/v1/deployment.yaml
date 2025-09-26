@@ -14,6 +14,8 @@ spec:
     metadata:
       labels:
         {{- include "jitsi-meet.overlay.v1.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/web/overlay/v1/configmap.yaml") . | sha256sum }}
     spec:
       containers:
         # Custom jitsi overlay

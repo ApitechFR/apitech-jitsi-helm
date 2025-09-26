@@ -14,6 +14,8 @@ spec:
     metadata:
       labels:
         {{- include "jitsi-meet.overlay.v1.proxy.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/web/overlay/proxy/configmap.yaml") . | sha256sum }}
     spec:
       containers:
         - name: proxy
