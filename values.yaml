@@ -230,7 +230,6 @@ overlay:
       ## APITECH : Annotations génriques, ne devraient pas être modifiées
       nginx.org/proxy-read-timeout: "3600"
       nginx.org/proxy-send-timeout: "3600"
-      nginx.org/server-snippet: |
       acme.cert-manager.io/http01-edit-in-place: "true"
     ## APITECH : Ici, bien spécifier le cluster-issuer
       cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -279,8 +278,10 @@ jicofo:
   affinity: {}
   extraEnvs: {}
 
+  ## APITECH : Paramètres de metrics pour Jicofo.
+  # Nécessaire pour le dashboard Grafana.
   metrics:
-    enabled: false
+    enabled: true
     image:
       repository: prayagsingh/prometheus-jicofo-exporter
       tag: "1.3.2"
@@ -386,9 +387,10 @@ jvb:
   affinity: {}
   extraEnvs: {}
 
-  ## APITECH : Pas encore testé, mais a l'air intéressant.
+  ## APITECH : Paramètres de metrics pour JVB.
+  # Nécessaire pour le dashboard Grafana.
   metrics:
-    enabled: false
+    enabled: true
     image:
       repository: docker.io/systemli/prometheus-jitsi-meet-exporter
       tag: 1.2.3
@@ -402,7 +404,7 @@ jvb:
         cpu: 20m
         memory: 32Mi
 
-    prometheusAnnotations: false
+    prometheusAnnotations: true
     serviceMonitor:
       enabled: true
       selector:
@@ -411,7 +413,7 @@ jvb:
       # honorLabels: false
 
     grafanaDashboards:
-      enabled: false
+      enabled: true
       labels:
         grafana_dashboard: "1"
       annotations: {}
@@ -474,7 +476,7 @@ jigasi:
   affinity: {}
   extraEnvs: {}
 
-
+## APITECH : Paramètres de Jibri.
 jibri:
   ## Enabling Jibri will allow users to record
   ## and/or stream their meetings (e.g. to YouTube).
@@ -501,7 +503,7 @@ jibri:
   ## Enable recording service.
   ## Set this to true/false to enable/disable local recordings.
   ## Defaults to enabled (allow local recordings).
-  recording: true
+  recording: false
 
   ## Enable livestreaming service.
   ## Set this to true/false to enable/disable live streams.
@@ -518,7 +520,7 @@ jibri:
   ## If disabled, jibri pod will use a transient
   ## emptyDir-backed storage instead.
   persistence:
-    enabled: true
+    enabled: false
     size: 4Gi
     ## Set this to existing PVC name if you have one.
     existingClaim:
@@ -639,11 +641,11 @@ turn:
   ssl:
     ## APITECH : Configuration des certificats TLS pour le serveur TURN.
     #  S'il faut générer les certificats TLS pour le serveur TURN, définir à true.
-    #  Si false, le chart s'attend à ce que les certificats soient présents dans le secret `jitsi-turn-tls`.
+    #  Si false, le chart s'attend à ce que les certificats soient présents dans le secret spécifié ci-dessous.
     #  Dans ce cas, le secret doit contenir les clés 'tls.crt' et 'tls.key'.
     generate: true
     secretName: jitsi-turn-tls
-    issuer: letsencrypt-staging # CHANGEME
+    issuer: CHANGEME
 
 
   ## APITECH : Le serveur TURN est configuré pour utiliser les IPs des JVBs.
@@ -709,3 +711,43 @@ prosody:
     # - name: prosody-modules
     #   subPath: mod_measure_client_presence.lua
     #   mountPath: /prosody-plugins-custom/mod_measure_client_presence.lua
+
+## APITECH : Paramètres pour le dashboard Grafana et la base de données Prometheus.
+#  Nécessaire pour monitorer les JVBs et Jicofo.
+# Nécessite l'opérateur prometheus-operator dans le cluster.
+dashboard:
+  enabled: true
+
+  prometheus:
+    retention: "7d"
+    storageClassName: CHANGEME
+    storage:
+      accessMode: "ReadWriteMany"
+      size: CHANGEME
+
+  grafana:
+    enabled: true
+    adminUser: CHANGEME
+    adminPassword: CHANGEME
+    image:
+      tag: "main"
+
+    storage:
+      size: 5Gi
+      accessMode: ReadWriteMany
+      storageClassName: CHANGEME
+
+    ingress:
+      enabled: true
+      ingressClassName: "nginx"
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        acme.cert-manager.io/http01-edit-in-place: "true"
+      hosts:
+        - host: CHANGEME.example.com
+          paths:
+            - /
+      tls:
+        - secretName: CHANGEME-tls
+          hosts:
+            - CHANGEME.example.com
