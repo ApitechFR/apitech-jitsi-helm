@@ -12,7 +12,6 @@ metadata:
 spec:
   selector:
     {{- include "jitsi-meet.turn.selectorLabels" . | nindent 4 }}
-    # app: {{ include "jitsi-meet.turn.fullname" . }}
   type: {{ .Values.turn.service.type }}
   externalTrafficPolicy: {{ .Values.turn.service.externalTrafficPolicy }}
   ports:
