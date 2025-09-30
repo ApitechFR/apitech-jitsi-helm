@@ -76,7 +76,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": "Prometheus",
       "description": "Busy state of all CPU cores together",
       "fieldConfig": {
         "defaults": {
@@ -144,7 +144,7 @@
       "pluginVersion": "7.3.7",
       "targets": [
         {
-          "expr": "(((count(count(node_cpu_seconds_total{instance=~\"$instance.*\"}) by (cpu))) - avg(sum by (mode)(irate(node_cpu_seconds_total{mode='idle',instance=~\"$instance.*\"}[5m])))) * 100) / count(count(node_cpu_seconds_total{instance=~\"$instance.*\"}) by (cpu))",
+          "expr": "(((count(count(node_cpu_seconds_total{job=~\"$job.*\"}) by (cpu))) - avg(sum by (mode)(irate(node_cpu_seconds_total{mode='idle',job=~\"$job.*\"}[5m])))) * 100) / count(count(node_cpu_seconds_total{job=~\"$job.*\"}) by (cpu))",
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
@@ -158,7 +158,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": "Prometheus",
       "description": "Non available RAM memory",
       "fieldConfig": {
         "defaults": {
@@ -220,7 +220,7 @@
       "pluginVersion": "7.3.7",
       "targets": [
         {
-          "expr": "((node_memory_MemTotal_bytes{instance=~\"$instance.*\"} - node_memory_MemFree_bytes{instance=~\"$instance.*\"}) / (node_memory_MemTotal_bytes{instance=~\"$instance.*\"} )) * 100",
+          "expr": "((node_memory_MemTotal_bytes{job=~\"$job.*\"} - node_memory_MemFree_bytes{job=~\"$job.*\"}) / (node_memory_MemTotal_bytes{job=~\"$job.*\"} )) * 100",
           "format": "time_series",
           "hide": true,
           "interval": "",
@@ -230,7 +230,7 @@
           "step": 900
         },
         {
-          "expr": "100 - ((node_memory_MemAvailable_bytes{instance=~\"$instance.*\"} * 100) / node_memory_MemTotal_bytes{instance=~\"$instance.*\"})",
+          "expr": "100 - ((node_memory_MemAvailable_bytes{job=~\"$job.*\"} * 100) / node_memory_MemTotal_bytes{job=~\"$job.*\"})",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -244,7 +244,7 @@
       "type": "gauge"
     },
     {
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": "Prometheus",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -288,7 +288,7 @@
       "pluginVersion": "7.3.7",
       "targets": [
         {
-          "expr": "sum(node_network_receive_bytes_total{instance=~\"$instance.*\"})*(9.31*10^-10)",
+          "expr": "sum(node_network_receive_bytes_total{job=~\"$job.*\"})*(9.31*10^-10)",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -296,13 +296,13 @@
           "refId": "A"
         },
         {
-          "expr": "sum(node_network_transmit_bytes_total{instance=~\"$instance.*\"})*(9.31*10^-10)",
+          "expr": "sum(node_network_transmit_bytes_total{job=~\"$job.*\"})*(9.31*10^-10)",
           "interval": "",
           "legendFormat": "Outgoing",
           "refId": "B"
         },
         {
-          "expr": "(sum(node_network_receive_bytes_total{instance=~\"$instance.*\"})+sum(node_network_transmit_bytes_total{instance=~\"$instance.*\"}))*(9.31*10^-10)",
+          "expr": "(sum(node_network_receive_bytes_total{job=~\"$job.*\"})+sum(node_network_transmit_bytes_total{job=~\"$job.*\"}))*(9.31*10^-10)",
           "interval": "",
           "legendFormat": "Total",
           "refId": "C"
@@ -315,7 +315,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": "Prometheus",
       "description": "The total incoming bitrate for the video bridge in kilobits per second.",
       "fieldConfig": {
         "defaults": {
@@ -375,7 +375,7 @@
       "pluginVersion": "7.3.7",
       "targets": [
         {
-          "expr": "jitsi_bit_rate_download{instance=~\"$instance.*\"}",
+          "expr": "jitsi_bit_rate_download{job=~\"$job.*\"}",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -388,7 +388,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": "Prometheus",
       "description": "The total outgoing bitrate for the video bridge in kilobits per second.",
       "fieldConfig": {
         "defaults": {
@@ -448,7 +448,7 @@
       "pluginVersion": "7.3.7",
       "targets": [
         {
-          "expr": "jitsi_bit_rate_upload{instance=~\"$instance.*\"}",
+          "expr": "jitsi_bit_rate_upload{job=~\"$job.*\"}",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -461,7 +461,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": "Prometheus",
       "description": "The number of Java threads that the video bridge is using.",
       "fieldConfig": {
         "defaults": {
@@ -521,7 +521,7 @@
       "pluginVersion": "7.3.7",
       "targets": [
         {
-          "expr": "jitsi_threads{instance=~\"$instance.*\"}",
+          "expr": "jitsi_threads{job=~\"$job.*\"}",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -534,7 +534,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": "Prometheus",
       "description": "An estimation of the number of current video streams forwarded by the bridge.",
       "fieldConfig": {
         "defaults": {
@@ -594,7 +594,7 @@
       "pluginVersion": "7.3.7",
       "targets": [
         {
-          "expr": "jitsi_videostreams{instance=~\"$instance.*\"}",
+          "expr": "jitsi_videostreams{job=~\"$job.*\"}",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -607,7 +607,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": "Prometheus",
       "description": "An average value (in milliseconds) of the RTT across all streams.",
       "fieldConfig": {
         "defaults": {
@@ -667,7 +667,7 @@
       "pluginVersion": "7.3.7",
       "targets": [
         {
-          "expr": "jitsi_rtt_aggregate{instance=~\"$instance.*\"}",
+          "expr": "jitsi_rtt_aggregate{job=~\"$job.*\"}",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -680,7 +680,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": "Prometheus",
       "description": "The sum of the lengths of all completed conferences, in seconds.",
       "fieldConfig": {
         "defaults": {
@@ -740,7 +740,7 @@
       "pluginVersion": "7.3.7",
       "targets": [
         {
-          "expr": "jitsi_total_conference_seconds{instance=~\"$instance.*\"}",
+          "expr": "jitsi_total_conference_seconds{job=~\"$job.*\"}",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -753,7 +753,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": "Prometheus",
       "description": "The number of participants in the largest conference currently hosted on the bridge.",
       "fieldConfig": {
         "defaults": {
@@ -813,7 +813,7 @@
       "pluginVersion": "7.3.7",
       "targets": [
         {
-          "expr": "max(jitsi_largest_conference{instance=~\"$instance.*\"})",
+          "expr": "max(jitsi_largest_conference{job=~\"$job.*\"})",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -826,7 +826,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": "Prometheus",
       "description": "The total number of conferences created on the bridge.",
       "fieldConfig": {
         "defaults": {
@@ -886,7 +886,7 @@
       "pluginVersion": "7.3.7",
       "targets": [
         {
-          "expr": "jitsi_total_conferences_created{instance=~\"$instance.*\"}",
+          "expr": "jitsi_total_conferences_created{job=~\"$job.*\"}",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -902,7 +902,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": "Prometheus",
       "decimals": null,
       "description": "The current number of conferences.",
       "fieldConfig": {
@@ -949,13 +949,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "jitsi_conferences{instance=~\"$instance.*\"}",
+          "expr": "jitsi_conferences{job=~\"$job.*\"}",
           "interval": "",
           "legendFormat": "conferences",
           "refId": "A"
         },
         {
-          "expr": "jitsi_p2p_conferences{instance=~\"$instance.*\"}",
+          "expr": "jitsi_p2p_conferences{job=~\"$job.*\"}",
           "interval": "",
           "legendFormat": "p2p conferences",
           "refId": "B"
@@ -1007,7 +1007,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": "Prometheus",
       "decimals": null,
       "description": "The current number of participants.",
       "fieldConfig": {
@@ -1054,7 +1054,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "jitsi_participants{instance=~\"$instance.*\"}",
+          "expr": "jitsi_participants{job=~\"$job.*\"}",
           "interval": "",
           "legendFormat": "participants",
           "refId": "A"
@@ -1117,7 +1117,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_PROMETHEUS}",
+          "datasource": "Prometheus",
           "description": "The total incoming/outgoing bitrate for the video bridge in kilobits per second.",
           "fill": 1,
           "fillGradient": 0,
@@ -1160,14 +1160,14 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jitsi_bit_rate_download{instance=~\"$instance.*\"}",
+              "expr": "jitsi_bit_rate_download{job=~\"$job.*\"}",
               "hide": false,
               "interval": "",
               "legendFormat": "download",
               "refId": "A"
             },
             {
-              "expr": "jitsi_bit_rate_upload{instance=~\"$instance.*\"}",
+              "expr": "jitsi_bit_rate_upload{job=~\"$job.*\"}",
               "hide": false,
               "interval": "",
               "legendFormat": "upload",
@@ -1220,7 +1220,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_PROMETHEUS}",
+          "datasource": "Prometheus",
           "description": " The total incoming/outgoing packet rate for the video bridge in packets per second.",
           "fill": 1,
           "fillGradient": 0,
@@ -1263,14 +1263,14 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jitsi_packet_rate_download{instance=~\"$instance.*\"}",
+              "expr": "jitsi_packet_rate_download{job=~\"$job.*\"}",
               "hide": false,
               "interval": "",
               "legendFormat": "download",
               "refId": "A"
             },
             {
-              "expr": "jitsi_packet_rate_upload{instance=~\"$instance.*\"}",
+              "expr": "jitsi_packet_rate_upload{job=~\"$job.*\"}",
               "hide": false,
               "interval": "",
               "legendFormat": "upload",
@@ -1323,7 +1323,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_PROMETHEUS}",
+          "datasource": "Prometheus",
           "description": "The fraction of lost incoming RTP packets. This is based on RTP sequence numbers and is relatively accurate.\nThe fraction of lost outgoing RTP packets. This is based on incoming RTCP Receiver Reports, and an attempt to subtract the fraction of packets that were not sent (i.e. were lost before they reached the bridge). Further, this is averaged over all streams of all users as opposed to all packets, so it is not correctly weighted. This is not accurate, but may be a useful metric nonetheless.",
           "fill": 1,
           "fillGradient": 0,
@@ -1366,14 +1366,14 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jitsi_loss_rate_download{instance=~\"$instance.*\"}",
+              "expr": "jitsi_loss_rate_download{job=~\"$job.*\"}",
               "hide": false,
               "interval": "",
               "legendFormat": "download",
               "refId": "A"
             },
             {
-              "expr": "jitsi_loss_rate_upload{instance=~\"$instance.*\"}",
+              "expr": "jitsi_loss_rate_upload{job=~\"$job.*\"}",
               "hide": false,
               "interval": "",
               "legendFormat": "upload",
@@ -1426,7 +1426,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_PROMETHEUS}",
+          "datasource": "Prometheus",
           "description": "Experimental. An average value (in milliseconds) of the jitter calculated for incoming and outgoing streams. This hasn't been tested and it is currently not known whether the values are correct or not.",
           "fill": 1,
           "fillGradient": 0,
@@ -1464,7 +1464,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jitsi_jitter_aggregate{instance=~\"$instance.*\"}",
+              "expr": "jitsi_jitter_aggregate{job=~\"$job.*\"}",
               "interval": "",
               "legendFormat": "jitter",
               "refId": "A"
@@ -1516,7 +1516,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_PROMETHEUS}",
+          "datasource": "Prometheus",
           "description": "An average value (in milliseconds) of the RTT across all streams.",
           "fill": 1,
           "fillGradient": 0,
@@ -1554,7 +1554,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jitsi_rtt_aggregate{instance=~\"$instance.*\"}",
+              "expr": "jitsi_rtt_aggregate{job=~\"$job.*\"}",
               "interval": "",
               "legendFormat": "rtt",
               "refId": "A"
@@ -1606,7 +1606,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_PROMETHEUS}",
+          "datasource": "Prometheus",
           "description": "The current number of audio/video channels.",
           "fill": 1,
           "fillGradient": 0,
@@ -1644,13 +1644,13 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jitsi_audiochannels{instance=~\"$instance.*\"}",
+              "expr": "jitsi_audiochannels{job=~\"$job.*\"}",
               "interval": "",
               "legendFormat": "audiochannels",
               "refId": "A"
             },
             {
-              "expr": "jitsi_videochannels{instance=~\"$instance.*\"}",
+              "expr": "jitsi_videochannels{job=~\"$job.*\"}",
               "interval": "",
               "legendFormat": "videochannels",
               "refId": "B"
@@ -1702,7 +1702,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_PROMETHEUS}",
+          "datasource": "Prometheus",
           "description": "The rate of participant-seconds that are loss-controlled.",
           "fill": 1,
           "fillGradient": 0,
@@ -1740,7 +1740,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(jitsi_total_loss_controlled_participant_seconds{instance=~\"$instance.*\"}[1m])",
+              "expr": "rate(jitsi_total_loss_controlled_participant_seconds{job=~\"$job.*\"}[1m])",
               "interval": "",
               "legendFormat": "participant-seconds",
               "refId": "A"
@@ -1792,7 +1792,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_PROMETHEUS}",
+          "datasource": "Prometheus",
           "description": "The rate of participant-seconds that are loss-limited.",
           "fill": 1,
           "fillGradient": 0,
@@ -1830,7 +1830,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(jitsi_total_loss_limited_participant_seconds{instance=~\"$instance.*\"}[1m])",
+              "expr": "rate(jitsi_total_loss_limited_participant_seconds{job=~\"$job.*\"}[1m])",
               "interval": "",
               "legendFormat": "participant-seconds",
               "refId": "A"
@@ -1882,7 +1882,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_PROMETHEUS}",
+          "datasource": "Prometheus",
           "description": "The rate of participant-seconds that are loss-degraded.",
           "fill": 1,
           "fillGradient": 0,
@@ -1920,7 +1920,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(jitsi_total_loss_degraded_participant_seconds{instance=~\"$instance.*\"}[1m])",
+              "expr": "rate(jitsi_total_loss_degraded_participant_seconds{job=~\"$job.*\"}[1m])",
               "interval": "",
               "legendFormat": "participant-seconds",
               "refId": "A"
@@ -1972,7 +1972,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_PROMETHEUS}",
+          "datasource": "Prometheus",
           "description": "The rate of failed conferences on the bridge. A conference is marked as failed when all of its channels have failed. A channel is marked as failed if it had no payload activity.",
           "fill": 1,
           "fillGradient": 0,
@@ -2010,7 +2010,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(jitsi_total_failed_conferences{instance=~\"$instance.*\"}[1m])",
+              "expr": "rate(jitsi_total_failed_conferences{job=~\"$job.*\"}[1m])",
               "interval": "",
               "legendFormat": "failed conferences",
               "refId": "A"
@@ -2062,7 +2062,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_PROMETHEUS}",
+          "datasource": "Prometheus",
           "description": "The rate of partially failed conferences on the bridge. A conference is marked as partially failed when some of its channels has failed. A channel is marked as failed if it had no payload activity.",
           "fill": 1,
           "fillGradient": 0,
@@ -2100,7 +2100,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(jitsi_total_partially_failed_conferences{instance=~\"$instance.*\"}[1m])",
+              "expr": "rate(jitsi_total_partially_failed_conferences{job=~\"$job.*\"}[1m])",
               "interval": "",
               "legendFormat": "partially failed conferences",
               "refId": "A"
@@ -2152,7 +2152,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_PROMETHEUS}",
+          "datasource": "Prometheus",
           "description": "The total number messages sent/received through data channels.",
           "fill": 1,
           "fillGradient": 0,
@@ -2195,13 +2195,13 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(jitsi_total_data_channel_messages_received{instance=~\"$instance.*\"}[1m])",
+              "expr": "rate(jitsi_total_data_channel_messages_received{job=~\"$job.*\"}[1m])",
               "interval": "",
               "legendFormat": "received",
               "refId": "A"
             },
             {
-              "expr": "rate(jitsi_total_data_channel_messages_sent{instance=~\"$instance.*\"}[1m])",
+              "expr": "rate(jitsi_total_data_channel_messages_sent{job=~\"$job.*\"}[1m])",
               "interval": "",
               "legendFormat": "sent",
               "refId": "B"
@@ -2253,7 +2253,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_PROMETHEUS}",
+          "datasource": "Prometheus",
           "description": "The total number messages sent/received through COLIBRI web sockets.",
           "fill": 1,
           "fillGradient": 0,
@@ -2296,13 +2296,13 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(jitsi_total_colibri_web_socket_messages_received{instance=~\"$instance.*\"}[1m])",
+              "expr": "rate(jitsi_total_colibri_web_socket_messages_received{job=~\"$job.*\"}[1m])",
               "interval": "",
               "legendFormat": "received",
               "refId": "A"
             },
             {
-              "expr": "rate(jitsi_total_colibri_web_socket_messages_sent{instance=~\"$instance.*\"}[1m])",
+              "expr": "rate(jitsi_total_colibri_web_socket_messages_sent{job=~\"$job.*\"}[1m])",
               "interval": "",
               "legendFormat": "sent",
               "refId": "B"
@@ -2354,7 +2354,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_PROMETHEUS}",
+          "datasource": "Prometheus",
           "description": "Stress Level reported to Jicofo by the videobridge.",
           "fieldConfig": {
             "defaults": {
@@ -2405,7 +2405,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jitsi_stress_level{instance=~\"$instance.*\"}",
+              "expr": "jitsi_stress_level{job=~\"$job.*\"}",
               "instant": false,
               "interval": "",
               "legendFormat": "stress level",
@@ -2468,18 +2468,18 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "${DS_PROMETHEUS}",
-        "definition": "label_values(jitsi_conferences, instance)",
+        "datasource": "Prometheus",
+        "definition": "label_values(jitsi_conferences, job)",
         "error": null,
         "hide": 0,
-        "includeAll": false,
-        "label": "instance",
-        "multi": false,
-        "name": "instance",
+        "includeAll": true,
+        "label": "job",
+        "multi": true,
+        "name": "job",
         "options": [],
-        "query": "label_values(jitsi_conferences, instance)",
+        "query": "label_values(jitsi_conferences, job)",
         "refresh": 1,
-        "regex": "/(.*):.*/",
+        "regex": ".*jicofo.*",
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",

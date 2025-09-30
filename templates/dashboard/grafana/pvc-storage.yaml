@@ -1,0 +1,17 @@
+{{- if .Values.dashboard.grafana.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "jitsi-meet.dashboard.grafana.fullname" . }}-pvc
+  labels:
+    {{- include "jitsi-meet.dashboard.grafana.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.dashboard.grafana.storage.accessMode | default "ReadWriteMany" | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.dashboard.grafana.storage.size | default "5Gi" | quote }}
+  {{- with .Values.dashboard.grafana.storage.storageClassName }}
+  storageClassName: {{ . | quote }}
+  {{- end }}
+{{- end }}

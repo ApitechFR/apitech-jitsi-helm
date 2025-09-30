@@ -1,0 +1,30 @@
+{{- if .Values.dashboard.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: {{ include "jitsi-meet.dashboard.prometheus.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.dashboard.prometheus.labels" . | nindent 4 }}
+spec:
+  serviceAccountName: {{ include "jitsi-meet.dashboard.prometheus.fullname" . }}
+  replicas: 1
+  serviceMonitorSelector: {}
+  serviceMonitorNamespaceSelector: null
+  podMonitorSelector: {}
+  podMonitorNamespaceSelector: null
+  retention: {{ .Values.dashboard.prometheus.retention | default "7d" }}
+  resources:
+    requests:
+      memory: 400Mi
+      cpu: 200m
+  storage:
+    volumeClaimTemplate:
+      spec:
+        {{- with .Values.dashboard.prometheus.storageClassName }}
+        storageClassName: {{ . | quote }}
+        {{- end }}
+        accessModes: [{{ .Values.dashboard.prometheus.storage.accessMode | default "ReadWriteOnce" | quote }}]
+        resources:
+          requests:
+            storage: {{ .Values.dashboard.prometheus.storage.size | default "10Gi" | quote }}
+{{- end }}

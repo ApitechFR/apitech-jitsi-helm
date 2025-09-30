@@ -1,0 +1,16 @@
+{{- if .Values.dashboard.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "jitsi-meet.dashboard.prometheus.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.dashboard.prometheus.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "jitsi-meet.dashboard.prometheus.fullname" . }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ include "jitsi-meet.dashboard.prometheus.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

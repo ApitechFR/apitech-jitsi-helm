@@ -1,0 +1,16 @@
+{{- if .Values.dashboard.grafana.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "jitsi-meet.dashboard.grafana.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.dashboard.grafana.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "jitsi-meet.dashboard.grafana.fullname" . }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ include "jitsi-meet.dashboard.grafana.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}
