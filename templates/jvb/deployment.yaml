@@ -1,3 +1,6 @@
+{{- if and $.Values.jvb.publicIPs (ne (len $.Values.jvb.publicIPs) (int $.Values.jvb.replicaCount)) }}
+{{- fail (printf "The number of jvb.publicIPs (%d) must match jvb.replicaCount (%d)" (len $.Values.jvb.publicIPs) (int $.Values.jvb.replicaCount)) }}
+{{- end }}
 {{- range $shard, $e := until (int $.Values.jvb.replicaCount) }}
 ---
 apiVersion: apps/v1
