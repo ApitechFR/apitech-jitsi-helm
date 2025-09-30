@@ -34,8 +34,8 @@ spec:
 
   externalTrafficPolicy: {{ $.Values.jvb.service.externalTrafficPolicy }}
   selector:
+    jvb-shard: {{ printf "%s-%d" (include "jitsi-meet.jvb.fullname" $) $shard }}
     {{- include "jitsi-meet.jvb.selectorLabels" $ | nindent 4 }}
-    app: {{ include "jitsi-meet.jvb.fullname" $ }}-{{ $shard }}
 {{- end }}
 {{ end -}}
 

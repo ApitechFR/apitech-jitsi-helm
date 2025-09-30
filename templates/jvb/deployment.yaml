@@ -8,6 +8,7 @@ kind: Deployment
 metadata:
   name: {{ include "jitsi-meet.jvb.fullname" $ }}-{{ $shard }}
   labels:
+    jvb-shard: {{ include "jitsi-meet.jvb.fullname" $ }}-{{ $shard }}
     {{- include "jitsi-meet.jvb.labels" $ | nindent 4 }}
   {{- with $.Values.jvb.annotations }}
   annotations:
@@ -19,7 +20,7 @@ spec:
   selector:
     matchLabels:
       {{- include "jitsi-meet.jvb.selectorLabels" $ | nindent 6 }}
-      app: {{ include "jitsi-meet.jvb.fullname" $ }}-{{ $shard }}
+      jvb-shard: {{ include "jitsi-meet.jvb.fullname" $ }}-{{ $shard }}
   {{- if $.Values.jvb.useHostPort }}
   strategy:
     type: Recreate
@@ -28,7 +29,7 @@ spec:
     metadata:
       labels:
         {{- include "jitsi-meet.jvb.selectorLabels" $ | nindent 8 }}
-        app: {{ include "jitsi-meet.jvb.fullname" $ }}-{{ $shard }}
+        jvb-shard: {{ include "jitsi-meet.jvb.fullname" $ }}-{{ $shard }}
       {{- range $label, $value := mergeOverwrite $.Values.global.podLabels $.Values.jvb.podLabels }}
         {{ $label }}: {{ $value }}
       {{- end }}

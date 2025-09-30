@@ -1,27 +1,35 @@
 {{- if and (.Values.jvb.metrics.enabled) (.Values.jvb.metrics.serviceMonitor.enabled) }}
+{{- range $shard := until (int $.Values.jvb.replicaCount) }}
+---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ template "jitsi-meet.jvb.fullname" . }}
+  name: {{ printf "%s-%d" (include "jitsi-meet.jvb.fullname" $) $shard }}
   labels:
-    {{- include "jitsi-meet.jvb.labels" . | nindent 4 }}
-    {{- with .Values.jvb.metrics.serviceMonitor.selector }}
-    {{- toYaml . | nindent 4 }}
+    jvb-shard: {{ printf "%s-%d" (include "jitsi-meet.jvb.fullname" $) $shard }}
+    {{ include "jitsi-meet.jvb.labels" $ | nindent 4 }}
+    {{- with $.Values.jvb.metrics.serviceMonitor.selector }}
+    {{ toYaml . | nindent 4 }}
     {{- end }}
 spec:
   endpoints:
     - port: tcp-metrics
       path: /metrics
-      {{- with .Values.jvb.metrics.serviceMonitor.honorLabels }}
+      {{- with $.Values.jvb.metrics.serviceMonitor.honorLabels }}
       honorLabels: {{ . }}
       {{- end }}
-      {{- with .Values.jvb.metrics.serviceMonitor.interval }}
+      {{- with $.Values.jvb.metrics.serviceMonitor.interval }}
       interval: {{ . }}
       {{- end }}
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_pod_name]
+          targetLabel: pod
   selector:
     matchLabels:
-      {{- include "jitsi-meet.jvb.labels" . | nindent 6 }}
+      jvb-shard: {{ printf "%s-%d" (include "jitsi-meet.jvb.fullname" $) $shard }}
+      {{ include "jitsi-meet.jvb.labels" $ | nindent 6 }}
   namespaceSelector:
     matchNames:
-      - {{ .Release.Namespace }}
-  {{- end -}}
+      - {{ $.Release.Namespace }}
+{{- end }}
+{{- end }}

@@ -1,10 +1,13 @@
 {{- if .Values.jvb.metrics.enabled }}
+{{- range $shard := until (int .Values.jvb.replicaCount) }}
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "jitsi-meet.jvb.fullname" . }}-metrics
+  name: {{ printf "%s-%d-metrics" (include "jitsi-meet.jvb.fullname" $) $shard }}
   labels:
-  {{- include "jitsi-meet.jvb.labels" . | nindent 4 }}
+    {{ include "jitsi-meet.jvb.labels" $ | nindent 4 }}
+    jvb-shard: {{ printf "%s-%d" (include "jitsi-meet.jvb.fullname" $) $shard }}
 spec:
   type: ClusterIP
   ports:
@@ -12,5 +15,7 @@ spec:
       protocol: TCP
       name: tcp-metrics
   selector:
-  {{- include "jitsi-meet.jvb.selectorLabels" . | nindent 4 }}
+    jvb-shard: {{ printf "%s-%d" (include "jitsi-meet.jvb.fullname" $) $shard }}
+    {{ include "jitsi-meet.jvb.selectorLabels" $ | nindent 4 }}
+{{- end }}
 {{- end }}
