@@ -77,7 +77,7 @@ spec:
           {{- if or $.Values.jvb.useNodeIP $.Values.jvb.publicIPs }}
           - name: DOCKER_HOST_ADDRESS
             {{- if $.Values.jvb.publicIPs }}
-            value: {{ first $.Values.jvb.publicIPs | quote }}
+            value: {{ (index $.Values.jvb.publicIPs $shard) | quote }}
             {{- else }}
             valueFrom:
               fieldRef:
