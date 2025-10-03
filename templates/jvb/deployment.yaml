@@ -1,5 +1,5 @@
-{{- if and $.Values.jvb.publicIPs (ne (len $.Values.jvb.publicIPs) (int $.Values.jvb.replicaCount)) }}
-{{- fail (printf "The number of jvb.publicIPs (%d) must match jvb.replicaCount (%d)" (len $.Values.jvb.publicIPs) (int $.Values.jvb.replicaCount)) }}
+{{- if and $.Values.jvb.publicIPs (lt (len $.Values.jvb.publicIPs) (int $.Values.jvb.replicaCount)) }}
+{{- fail (printf "The number of jvb.publicIPs (%d) must be greater than or equal to jvb.replicaCount (%d)" (len $.Values.jvb.publicIPs) (int $.Values.jvb.replicaCount)) }}
 {{- end }}
 {{- range $shard, $e := until (int $.Values.jvb.replicaCount) }}
 ---
