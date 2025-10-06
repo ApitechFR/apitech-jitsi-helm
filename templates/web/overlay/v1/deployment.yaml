@@ -16,6 +16,9 @@ spec:
         {{- include "jitsi-meet.overlay.v1.selectorLabels" . | nindent 8 }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/web/overlay/v1/configmap.yaml") . | sha256sum }}
+        {{- if not .Values.overlay.database.useExternalDatabase }}
+        checksum/secret: {{ include (print $.Template.BasePath "/web/overlay/database/secret.yaml") . | sha256sum }}
+        {{- end }}
     spec:
       containers:
         # Custom jitsi overlay
@@ -25,6 +28,10 @@ spec:
           envFrom:
           - configMapRef:
               name: {{ include "jitsi-meet.overlay.v1.fullname" . }}
+          {{- if not .Values.overlay.database.useExternalDatabase }}
+          - secretRef:
+              name: {{ include "jitsi-meet.overlay.database.fullname" . }}-secret
+          {{- end }}
           volumeMounts:
             - name: shared-meet
               mountPath: /usr/share/jitsi-meet

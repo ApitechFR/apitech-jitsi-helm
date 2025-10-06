@@ -15,6 +15,17 @@ data:
     {{- if not .Values.overlay.v1.envValues.RATE_IMG_SRC }}
     RATE_IMG_SRC: "/pictures/client/{{ .Values.overlay.v1.assets.rateImage }}"
     {{- end }}
+    {{- if .Values.overlay.database.useExternalDatabase }}
+    MARIADB_SERVER: {{ .Values.overlay.database.externalDatabase.host }}
+    MARIADB_DB: {{ .Values.overlay.database.externalDatabase.database }}
+    MARIADB_USER: {{ .Values.overlay.database.externalDatabase.user }}
+    MARIADB_PASSWORD: {{ .Values.overlay.database.externalDatabase.password }}
+    {{- else }}
+    MARIADB_SERVER: {{ include "jitsi-meet.overlay.database.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+    MARIADB_DB: {{ .Values.overlay.database.auth.database }}
+    {{- end }}
+    {{/* Pas besoin de renseigner le user/password, c'est chargé dans le secret */}}
+    MARIADB_RATING_TABLE: Rating
   {{- range $key, $value := .Values.overlay.v1.envValues }}
     {{ $key }}: {{ $value | quote }}
   {{- end }}

@@ -62,6 +62,21 @@ app.kubernetes.io/component: web-proxy
 app.kubernetes.io/component: web-proxy
 {{- end -}}
 
+{# Database #}
+{{- define "jitsi-meet.overlay.database.fullname" -}}
+{{ include "jitsi-meet.fullname" . }}-overlay-db
+{{- end -}}
+
+{{- define "jitsi-meet.overlay.database.labels" -}}
+{{ include "jitsi-meet.labels" . }}
+app.kubernetes.io/component: web-overlay-db
+{{- end -}}
+
+{{- define "jitsi-meet.overlay.database.selectorLabels" -}}
+{{ include "jitsi-meet.selectorLabels" . }}
+app.kubernetes.io/component: web-overlay-db
+{{- end -}}
+
 {# Prosody #}
 
 {{- define "jitsi-meet.prosody.fullname" -}}

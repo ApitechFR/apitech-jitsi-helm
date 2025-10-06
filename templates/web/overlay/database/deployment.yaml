@@ -1,0 +1,57 @@
+{{- if and .Values.overlay.enabled (not .Values.overlay.database.useExternalDatabase) }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "jitsi-meet.overlay.database.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.overlay.database.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "jitsi-meet.overlay.database.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "jitsi-meet.overlay.database.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/web/overlay/database/secret.yaml") . | sha256sum }}
+    spec:
+      containers:
+        - name: mariadb
+          image: "{{ .Values.overlay.database.image.repository }}:{{ .Values.overlay.database.image.tag }}"
+          imagePullPolicy: {{ .Values.overlay.database.image.pullPolicy }}
+          envFrom:
+            - secretRef:
+                name: {{ include "jitsi-meet.overlay.database.fullname" . }}-secret
+          ports:
+            - containerPort: 3306
+              name: mariadb
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql/data
+          resources:
+            {{- toYaml .Values.overlay.database.resources | nindent 12 }}
+          # readinessProbe:
+          #   exec:
+          #     command: ["mysqladmin", "ping", "-h", "127.0.0.1"]
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 5
+          # livenessProbe:
+          #   exec:
+          #     command: ["mysqladmin", "ping", "-h", "127.0.0.1"]
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        ## APITECH : Pas de ReadWriteOnce pour le backup
+        accessModes: ["{{ .Values.overlay.database.storage.accessMode }}"]
+        {{- if .Values.overlay.database.storage.storageClass }}
+        storageClassName: "{{ .Values.overlay.database.storage.storageClass }}"
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.overlay.database.storage.size }}
+{{- end }}

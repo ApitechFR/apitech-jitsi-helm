@@ -1,0 +1,16 @@
+{{- if and .Values.overlay.enabled (not .Values.overlay.database.useExternalDatabase) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "jitsi-meet.overlay.database.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.overlay.database.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3306
+      protocol: TCP
+      name: mariadb
+  selector:
+    {{- include "jitsi-meet.overlay.database.selectorLabels" . | nindent 4 }}
+{{- end }}
