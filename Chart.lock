@@ -1,6 +1,6 @@
 dependencies:
 - name: prosody
-  repository: ""
-  version: 1.4.1
-digest: sha256:a0a3a757b024c3a07e5137b17dac2635a34c87555246efc51e1412f75c74371c
-generated: "2024-08-30T02:11:05.30585+03:00"
+  repository: file://charts/prosody
+  version: 1.6.1
+digest: sha256:de64be537be04a1e811c049bf9fe62f0fe58af70aaf8cbc4e9a2b180d5ece97b
+generated: "2025-09-25T11:47:51.909637467+02:00"
