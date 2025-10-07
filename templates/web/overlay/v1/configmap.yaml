@@ -9,23 +9,19 @@ data:
     JITSI_VERSION: 2.0.{{ .Chart.AppVersion | replace "stable-" "" }}
     JWT_APP_ID: {{ .Values.jwt.appId | quote }}
     JWT_SECRET: {{ .Values.jwt.secret | quote }}
-    {{- if not .Values.overlay.v1.envValues.TOPBAR_LOGO }}
     TOPBAR_LOGO: "/pictures/client/{{ .Values.overlay.v1.assets.logo | default "logo.png" }}"
-    {{- end }}
-    {{- if not .Values.overlay.v1.envValues.RATE_IMG_SRC }}
     RATE_IMG_SRC: "/pictures/client/{{ .Values.overlay.v1.assets.rateImage }}"
-    {{- end }}
     {{- if .Values.overlay.database.useExternalDatabase }}
     MARIADB_SERVER: {{ .Values.overlay.database.externalDatabase.host }}
     MARIADB_DB: {{ .Values.overlay.database.externalDatabase.database }}
     MARIADB_USER: {{ .Values.overlay.database.externalDatabase.user }}
     MARIADB_PASSWORD: {{ .Values.overlay.database.externalDatabase.password }}
     {{- else }}
+    {{/* Pas besoin de renseigner le user/password, c'est chargé dans le secret */}}
     MARIADB_SERVER: {{ include "jitsi-meet.overlay.database.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
     MARIADB_DB: {{ .Values.overlay.database.auth.database }}
     {{- end }}
-    {{/* Pas besoin de renseigner le user/password, c'est chargé dans le secret */}}
-    MARIADB_RATING_TABLE: Rating
+    MARIADB_RATING_TABLE: rate
   {{- range $key, $value := .Values.overlay.v1.envValues }}
     {{ $key }}: {{ $value | quote }}
   {{- end }}
