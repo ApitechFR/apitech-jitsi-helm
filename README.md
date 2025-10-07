@@ -175,6 +175,13 @@ prosody:
       mountPath: /prosody-plugins-custom/mod_measure_client_presence.lua
 ```
 
+## Package
+
+```bash
+helm package . -d docs
+helm repo index docs --url https://apitechfr.github.io/apitech-jitsi-helm/
+```
+
 ## Configuration
 
 The following table lists the configurable parameters of the jisti-meet chart and their default values.
@@ -263,10 +270,3 @@ Parameter | Description | Default
 `web.overlay.enabled` | Boolean to enable or disable the Joona overlay | `false`
 `web.overlay.proxy.replicas` | Number of replicas for the Joona overlay proxy | `1`
 `tz` | System Time Zone | `Europe/Amsterdam`
-
-## Package
-
-```bash
-helm package . -d docs
-helm repo index docs --url https://jitsi-contrib.github.io/jitsi-helm/
-```
