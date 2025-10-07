@@ -50,6 +50,15 @@ spec:
           {{- with .Values.overlay.v1.extraVolumeMounts }}
           {{- toYaml . | nindent 10 }}
           {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+
       volumes:
         - name: nginx-config
           configMap:

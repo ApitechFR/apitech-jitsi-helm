@@ -24,14 +24,14 @@ spec:
           ports:
             - containerPort: {{ .Values.overlay.v1.proxy.service.port }}
               name: http
-          {{- with .Values.web.livenessProbe }}
           livenessProbe:
-          {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.web.readinessProbe }}
+            httpGet:
+              path: /
+              port: 80
           readinessProbe:
-          {{- toYaml . | nindent 12 }}
-          {{- end }}
+            httpGet:
+              path: /
+              port: 80
           volumeMounts:
             - name: nginx-config
               mountPath: /etc/nginx/nginx.conf
