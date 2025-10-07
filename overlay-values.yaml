@@ -7,48 +7,34 @@ web:
 
       # DOMAIN AND BRANDING
       JITSI_DOMAIN: "CHANGEME.mondomaine.tld"
-      TOPBAR_LOGO: "/pictures/client/logo_joona.png"
       TOPBAR_TITLE: "Joona By Apitech"
       TOPBAR_HEADER_TITLE: "CHANGEME.mondomaine.tld"
       TOPBAR_COLOR: "#343a40"
-      PATH_FAVICON: "../public/pictures/icons/favicon.ico"
-      EXTERNAL_API_PATH: external_api.js
+      PATH_FAVICON: "favicon.ico"
 
       # UI CUSTOMIZATION
       BASELINE: "L'outil de visioconférence sécurisée (DEV)"
-      RATE_IMG_SRC: ""
       PRODUCT_NAME: "Joona"
       RATE_PRODUCT_NAME: "CHANGEME.mondomaine.tld"
-      RATE_CUSTOM_FOOTER: "\"margin: 20px;\">Pour toute implémentation spécifique :<br><a href: \"http://www.apitech.net\" target: \"_blank\">Apitech.fr</a> / <a href: \"mailto:contact@apitech.fr\">contact@apitech.fr</a></div>\""
-      ABOUT_CREDIT: "<div style: \"padding:10px; width:calc(100% - 98px);\">Powered by <strong>Apitech</strong><br/><a href: \"http://www.apitech.net\">https://apitech.fr</a> / <a href: \"mailto:contact@apitech.fr\">contact@apitech.fr</a></div>\""
-      SHOW_BURGER_MENU: "false"
-      DISPLAY_SUBJECT_ON_PREJOIN: "false"
-      HIDE_LOBBY_PASSWORD_BUTTON: "false"
+      RATE_CUSTOM_FOOTER: "\"margin: 20px;\">Pour toute implémentation spécifique :<br><a href=\"http://www.apitech.net\" target=\"_blank\">Apitech.fr</a> / <a href=\"mailto:contact@apitech.fr\">contact@apitech.fr</a></div>"
+      ABOUT_CREDIT: "<div style=\"padding:10px; width:calc(100% - 98px);\">Powered by <strong>Apitech</strong><br/><a href=\"http://www.apitech.net\">https://apitech.fr</a> / <a href=\"mailto:contact@apitech.fr\">contact@apitech.fr</a></div>"
+      SHOW_BURGER_MENU: false
+      DISPLAY_SUBJECT_ON_PREJOIN: false
+      HIDE_LOBBY_PASSWORD_BUTTON: false
       BACKGROUND_COLOR: "#e9ecef"
       TEXT_COLOR: "#ffffff"
-      DISABLE_HEADER: "false"
-      USE_LOCAL_ASSETS: "false"
-
-      #DATABASE CONFIGURATION
-      #MARIADB_SERVER: 192.168.1.240
-      MARIADB_SERVER: CHANGEME
-      MARIADB_DB: jitsi
-      MARIADB_USER: jitsi
-      MARIADB_PASSWORD: CHANGEME
-      MARIADB_RATING_TABLE: Rating
+      DISABLE_HEADER: false
+      USE_LOCAL_ASSETS: false
 
       #ONLINE RESOURCES
       HELP_LINK: "help/"
 
-      #REDIRECT_URI: "url/to/redirect_after_action" relative or absolute path
       REDIRECT_URI: "/"
-      #EXTERNAL_API_PATH: "path/to/external_api" absolute path
-      #RATING_POST_URL: "url/to/rating_webhook"
+      EXTERNAL_API_PATH: external_api.js
+
       RATING_POST_URL: ""
-      #RATING_POST_DATA_TEMPLATE: "JSON formatted string for posting ratings"
       RATING_POST_DATA_TEMPLATE: ""
 
-      #WHATSNEW_ROOT_URL: "url/to/whatsnew_page" relative or absolute path
       WHATSNEW_ROOT_URL: "https://version.joona.fr/changelogs/jitsi/"
 
       JITSI_WEB_OVERLAY_VERSION: "1.6.3"
@@ -66,11 +52,9 @@ web:
       FEEDBACK_COLLECTION_ENABLED: "true"
 
       # SECURITY AND AUTHENTICATION
-      READONLYNAME: "false"
+      READONLYNAME: false
 
-      JWT_APP_ID: "your_jwt_app_id"
-
-      OID_USE: "false"
+      OID_USE: false
       OID_APP_ID: "your_oidc_app_id"
       OID_REDIRECT_URI: "url/to/oidc_redirect"
       OID_LOGOUT_URI: "url/to/oidc_logout"
@@ -79,9 +63,8 @@ web:
       OID_FIRSTNAME_CLAIM: "given_name"
       OID_LASTNAME_CLAIM: "family_name"
       OID_EMAIL_CLAIM: "email"
-      HIDE_DISPLAYNAME_FIELD_IFJWT: "true"
+      HIDE_DISPLAYNAME_FIELD_IFJWT: true
       OID_SCOPE: "openid email profile userinfo"
-      OID_POPUP_LOGO: ""
 
       # LEGAL AND COMPLIANCE
       #ML_TEXT: "legal text"
@@ -90,10 +73,10 @@ web:
       ML_URL: ""
       #ML_LINK_TEXT: "label_for_legal_link"
       ML_LINK_TEXT: ""
-      RECORDING_CONSENT: "false"
+      RECORDING_CONSENT: false
 
       # COMPATIBILITY AND PERFORMANCE
-      DISABLE_FIREFOX_WARNING: "false"
+      DISABLE_FIREFOX_WARNING: false
       FIREFOX_WARNING_MESSAGE: "Firefox n'est pas le navigateur recommandé pour l'utilisation de Jitsi, merci de vous connecter avec le navigateur Chrome ou Edge"
       #METRICS_IPS: "allowed_ips"
       METRICS_IPS: "*"
@@ -101,22 +84,11 @@ web:
       # ADVANCED SETTINGS
       #HOME_PATH: your_home_directory_path
       HOME_PATH: Joona
-      AUTO_AUTH_ON_COOKIE: "false"
+      AUTO_AUTH_ON_COOKIE: false
       AUTO_AUTH_COOKIE_NAME: "cookie_name_for_auth"
       #WARNING_MESSAGE : print the warning message on top window
       WARNING_MESSAGE: Test en plateforme de dev
 
-      # Video Recording (Jibri)
-      ENABLE_JIBRI_APITECH_API: "false"
-      JIBRI_APITECH_API_DOMAIN:
-      HOST_DATA_SSH_PORT: "22110"
-
-      # PLUGIN OUTLOOK
-      DOWNLOAD_XML: /plugin-outlook/manifest.xml
-
-      CONFERENCE_NAME_REGEX:
-      CONFERENCE_NAME_REGEX_MESSAGE:
-
-    secretsValues:
-      JWT_SECRET: "your_jwt_secret"
-      OID_SECRET: "your_oidc_secret"
+      # # Video Recording (Jibri)
+      # ENABLE_JIBRI_APITECH_API: true
+      # JIBRI_APITECH_API_DOMAIN: https://jitsibyjalios.com/api/jalios
