@@ -12,19 +12,19 @@ entries:
           url: https://github.com/jitsi-contrib/jitsi-helm
     apiVersion: v2
     appVersion: stable-10314
-    created: "2025-10-07T16:47:11.387655791+02:00"
+    created: "2025-10-07T16:53:37.003251164+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
       repository: file://charts/prosody
       version: 1.6.3
     description: Jitsi Meet packaged for Kubernetes
-    digest: 884c7ae750d97aed1acc69dbb9a17e605d98acb397597978dac79bc556deedd1
+    digest: dac78400d9c42d88603b8f3749473443c5b7623089112aa67bc45269dca65a5f
     icon: https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet.png
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.6.3.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.6.3.tgz
     version: 1.6.3
   - annotations:
       artifacthub.io/category: streaming-messaging
@@ -37,7 +37,7 @@ entries:
           url: https://github.com/jitsi-contrib/jitsi-helm
     apiVersion: v2
     appVersion: stable-10314
-    created: "2025-10-07T16:47:11.383135241+02:00"
+    created: "2025-10-07T16:53:36.988906519+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -49,7 +49,7 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.6.2.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.6.2.tgz
     version: 1.6.2
   - annotations:
       artifacthub.io/category: streaming-messaging
@@ -62,7 +62,7 @@ entries:
           url: https://github.com/jitsi-contrib/jitsi-helm
     apiVersion: v2
     appVersion: stable-10314
-    created: "2025-10-07T16:47:11.375796475+02:00"
+    created: "2025-10-07T16:53:36.976034724+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -74,7 +74,7 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.6.1.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.6.1.tgz
     version: 1.6.1
   - annotations:
       artifacthub.io/category: streaming-messaging
@@ -87,7 +87,7 @@ entries:
           url: https://github.com/jitsi-contrib/jitsi-helm
     apiVersion: v2
     appVersion: stable-10133
-    created: "2025-10-07T16:47:11.373273269+02:00"
+    created: "2025-10-07T16:53:36.972797406+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -99,7 +99,7 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.6.0.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.6.0.tgz
     version: 1.6.0
   - annotations:
       artifacthub.io/category: streaming-messaging
@@ -112,7 +112,7 @@ entries:
           url: https://github.com/jitsi-contrib/jitsi-helm
     apiVersion: v2
     appVersion: stable-9646
-    created: "2025-10-07T16:47:11.369779276+02:00"
+    created: "2025-10-07T16:53:36.969299045+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -124,7 +124,7 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.4.1.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.4.1.tgz
     version: 1.4.1
   - annotations:
       artifacthub.io/category: streaming-messaging
@@ -137,7 +137,7 @@ entries:
           url: https://github.com/jitsi-contrib/jitsi-helm
     apiVersion: v2
     appVersion: stable-9646
-    created: "2025-10-07T16:47:11.366217552+02:00"
+    created: "2025-10-07T16:53:36.958720606+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -149,11 +149,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.4.0.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.4.0.tgz
     version: 1.4.0
   - apiVersion: v2
     appVersion: stable-9111
-    created: "2025-10-07T16:47:11.364233439+02:00"
+    created: "2025-10-07T16:53:36.955653967+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -164,11 +164,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.3.8.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.3.8.tgz
     version: 1.3.8
   - apiVersion: v2
     appVersion: stable-8719
-    created: "2025-10-07T16:47:11.362492511+02:00"
+    created: "2025-10-07T16:53:36.953551582+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -179,11 +179,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.3.7.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.3.7.tgz
     version: 1.3.7
   - apiVersion: v2
     appVersion: stable-8719
-    created: "2025-10-07T16:47:11.360187338+02:00"
+    created: "2025-10-07T16:53:36.950016757+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -194,11 +194,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.3.6.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.3.6.tgz
     version: 1.3.6
   - apiVersion: v2
     appVersion: stable-8319
-    created: "2025-10-07T16:47:11.358492063+02:00"
+    created: "2025-10-07T16:53:36.940936966+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -209,11 +209,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.3.5.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.3.5.tgz
     version: 1.3.5
   - apiVersion: v2
     appVersion: stable-8319
-    created: "2025-10-07T16:47:11.35391024+02:00"
+    created: "2025-10-07T16:53:36.938116065+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -224,11 +224,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.3.4.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.3.4.tgz
     version: 1.3.4
   - apiVersion: v2
     appVersion: stable-8252
-    created: "2025-10-07T16:47:11.352502665+02:00"
+    created: "2025-10-07T16:53:36.928726445+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -239,11 +239,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.3.3.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.3.3.tgz
     version: 1.3.3
   - apiVersion: v2
     appVersion: stable-8218
-    created: "2025-10-07T16:47:11.351264635+02:00"
+    created: "2025-10-07T16:53:36.92538914+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -254,11 +254,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.3.2.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.3.2.tgz
     version: 1.3.2
   - apiVersion: v2
     appVersion: stable-8044
-    created: "2025-10-07T16:47:11.349980526+02:00"
+    created: "2025-10-07T16:53:36.923313897+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -269,11 +269,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.3.1.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.3.1.tgz
     version: 1.3.1
   - apiVersion: v2
     appVersion: stable-8044
-    created: "2025-10-07T16:47:11.348555735+02:00"
+    created: "2025-10-07T16:53:36.920464712+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -284,11 +284,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.3.0.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.3.0.tgz
     version: 1.3.0
   - apiVersion: v2
     appVersion: stable-7830
-    created: "2025-10-07T16:47:11.347247436+02:00"
+    created: "2025-10-07T16:53:36.909762117+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -299,11 +299,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.2.3.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.2.3.tgz
     version: 1.2.3
   - apiVersion: v2
     appVersion: stable-6865
-    created: "2025-10-07T16:47:11.34304439+02:00"
+    created: "2025-10-07T16:53:36.907511711+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -314,11 +314,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.2.2.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.2.2.tgz
     version: 1.2.2
   - apiVersion: v2
     appVersion: stable-6865
-    created: "2025-10-07T16:47:11.341588774+02:00"
+    created: "2025-10-07T16:53:36.904091604+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -329,11 +329,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.2.1.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.2.1.tgz
     version: 1.2.1
   - apiVersion: v2
     appVersion: stable-6865
-    created: "2025-10-07T16:47:11.340496683+02:00"
+    created: "2025-10-07T16:53:36.897655857+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -344,11 +344,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.2.0.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.2.0.tgz
     version: 1.2.0
   - apiVersion: v2
     appVersion: stable-6726
-    created: "2025-10-07T16:47:11.33940481+02:00"
+    created: "2025-10-07T16:53:36.895046906+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -359,11 +359,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.1.0.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.1.0.tgz
     version: 1.1.0
   - apiVersion: v2
     appVersion: stable-6433
-    created: "2025-10-07T16:47:11.338501361+02:00"
+    created: "2025-10-07T16:53:36.888395727+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -374,11 +374,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-1.0.0.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.0.0.tgz
     version: 1.0.0
   - apiVersion: v2
     appVersion: stable-5963
-    created: "2025-10-07T16:47:11.337465569+02:00"
+    created: "2025-10-07T16:53:36.880185755+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -389,11 +389,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-0.2.1.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-0.2.1.tgz
     version: 0.2.1
   - apiVersion: v2
     appVersion: stable-5963
-    created: "2025-10-07T16:47:11.336574032+02:00"
+    created: "2025-10-07T16:53:36.878325954+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -404,11 +404,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-0.2.0.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-0.2.0.tgz
     version: 0.2.0
   - apiVersion: v2
     appVersion: stable-5390-3
-    created: "2025-10-07T16:47:11.335513189+02:00"
+    created: "2025-10-07T16:53:36.876498323+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -419,11 +419,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-0.1.4.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-0.1.4.tgz
     version: 0.1.4
   - apiVersion: v2
     appVersion: stable-5390-3
-    created: "2025-10-07T16:47:11.332013067+02:00"
+    created: "2025-10-07T16:53:36.867125769+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -434,11 +434,11 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-0.1.3.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-0.1.3.tgz
     version: 0.1.3
   - apiVersion: v2
     appVersion: stable-5390-3
-    created: "2025-10-07T16:47:11.331055094+02:00"
+    created: "2025-10-07T16:53:36.861553775+02:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -449,6 +449,6 @@ entries:
     name: jitsi-meet
     type: application
     urls:
-    - https://apitechfr.github.io/apitech-jitsi-helm/docs/jitsi-meet-0.1.2.tgz
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-0.1.2.tgz
     version: 0.1.2
-generated: "2025-10-07T16:47:11.329779995+02:00"
+generated: "2025-10-07T16:53:36.858107307+02:00"
