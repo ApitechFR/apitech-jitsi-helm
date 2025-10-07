@@ -1,5 +1,5 @@
-web:
-  overlay:
+overlay:
+  v1:
     envValues:
       OVERLAY_PORT: "3000"
       NODE_ENV: production
