@@ -42,7 +42,8 @@ fullnameOverride: ""
 # Where Jitsi Web UI is made available
 # such as jitsi.example.com
 ### APITECH : Cette URL n'est PAS celle de l'overlay mais celle du Jitsi SANS OVERLAY.
-publicURL: "CHANGEME.example.com"
+## ATTENTION : Cette URL __doit__ être préfixée de "https://", sinon le Jibri ne marchera pas.
+publicURL: "https://CHANGEME.example.com"
 
 tz: Europe/Paris
 
