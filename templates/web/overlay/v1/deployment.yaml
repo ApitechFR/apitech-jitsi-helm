@@ -20,6 +20,16 @@ spec:
         checksum/secret: {{ include (print $.Template.BasePath "/web/overlay/database/secret.yaml") . | sha256sum }}
         {{- end }}
     spec:
+      initContainers:
+        - name: wait-for-db
+          image: alpine:latest
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c", "for i in $(seq 1 300); do nc -zvw1 ${MARIADB_SERVER} 3306 && exit 0 || sleep 3; done; exit 1"]
+          {{- if not .Values.overlay.database.useExternalDatabase }}
+          envFrom:
+          - configMapRef:
+              name: {{ include "jitsi-meet.overlay.v1.fullname" . }}
+          {{- end }}
       containers:
         # Custom jitsi overlay
         - name: {{ .Chart.Name }}-overlay
