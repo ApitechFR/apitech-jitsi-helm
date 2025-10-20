@@ -210,7 +210,7 @@ spec:
       name: prosody-data
     spec:
       accessModes:
-        - ReadWriteOnce
+        - {{ .Values.persistence.accessMode }}
       volumeMode: Filesystem
       resources:
         requests:
