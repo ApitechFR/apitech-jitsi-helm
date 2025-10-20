@@ -17,10 +17,6 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/web/overlay/proxy/configmap.yaml") . | sha256sum }}
     spec:
-      {{- with $.Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml $ | nindent 8 }}
-      {{- end }}
       containers:
         - name: proxy
           image: {{ .Values.overlay.v1.proxy.image.repository }}:{{ .Values.overlay.v1.proxy.image.tag }}

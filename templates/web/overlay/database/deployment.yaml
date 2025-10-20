@@ -17,10 +17,6 @@ spec:
       annotations:
         checksum/secret: {{ include (print $.Template.BasePath "/web/overlay/database/secret.yaml") . | sha256sum }}
     spec:
-      {{- with $.Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml $ | nindent 8 }}
-      {{- end }}
       containers:
         - name: mariadb
           image: "{{ .Values.overlay.database.image.repository }}:{{ .Values.overlay.database.image.tag }}"
