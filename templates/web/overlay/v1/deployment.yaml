@@ -20,6 +20,10 @@ spec:
         checksum/secret: {{ include (print $.Template.BasePath "/web/overlay/database/secret.yaml") . | sha256sum }}
         {{- end }}
     spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml $ | nindent 8 }}
+      {{- end }}
       initContainers:
         - name: wait-for-db
           image: alpine:latest
