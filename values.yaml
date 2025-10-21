@@ -712,6 +712,10 @@ prosody:
   image:
     repository: jitsi/prosody
     tag: stable-10314
+    
+  ## APITECH : Désactivation du module "end_conference".
+  #  À laisser désactivé sauf contre-indication.
+  enableEndConference: false
 
   # service:
   #   ports:

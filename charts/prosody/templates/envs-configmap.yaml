@@ -5,6 +5,7 @@ metadata:
   labels:
     {{- include "prosody.labels" . | nindent 4 }}
 data:
+  ENABLE_END_CONFERENCE: "{{ .Values.enableEndConference | default false }}"
   {{- range $key, $value := .Values.env }}
   {{- if not (kindIs "invalid" $value) }}
   {{ $key }}: {{ tpl $value $ | quote }}
