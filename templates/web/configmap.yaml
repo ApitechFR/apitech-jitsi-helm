@@ -9,6 +9,8 @@ data:
   ENABLE_HTTP_REDIRECT: {{ ternary "1" "0" .Values.web.httpRedirect | quote }}
   JICOFO_AUTH_USER: focus
   XMPP_BOSH_URL_BASE: 'http://{{ include "jitsi-meet.xmpp.server" . }}:{{ index .Values.prosody.service.ports "bosh-insecure" }}'
+  DISABLE_LOCAL_RECORDING: {{ ternary "1" "0" .Values.web.disableLocalRecording | default "1" | quote }}
+  ENABLE_LOCAL_RECORDING_NOTIFY_ALL_PARTICIPANT: {{ ternary "1" "0" .Values.web.enableLocalRecordingNotifyAllParticipant | default "1" | quote }}
   {{- if .Values.web.resolverIP }}
   NGINX_RESOLVER: {{ .Values.web.resolverIP }}
   {{- end }}

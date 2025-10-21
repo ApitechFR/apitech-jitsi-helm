@@ -125,6 +125,12 @@ web:
 
   # When tls-termination by the ingress is not wanted, enable this and set web.service.type=Loadbalancer
   httpsEnabled: false
+  
+  ## APITECH : Désactivation de l'enregistrement local.
+  ## Laisser à true sauf contre-indication.
+  disableLocalRecording: true
+  ## Laisser aussi à true sauf contre-indication.
+  enableLocalRecordingNotifyAllParticipant: true
 
   ## Resolver IP for nginx.
   #
