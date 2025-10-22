@@ -1,4 +1,4 @@
-{{- if and .Values.overlay.enabled (eq .Values.overlay.mode "v1") -}}
+{{- if and .Values.overlay.enabled (eq .Values.overlay.mode "v1") (not .Values.overlay.v1.assetsConfigmap) -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:

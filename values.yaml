@@ -218,15 +218,9 @@ overlay:
       extraVolumeMounts: []
       extraVolumes: []
     ### APITECH: Gestion des assets
-    assets:
-      ### Dossier local contenant les assets
-      ### Les assets seront montés dans le chemin /assets
-      ### Ce dossier doit contenir au minimum:
-      # - logo.png (logo dans la barre du haut)
-      # - rate-image.png (image pour le sondage de fin de conférence)
-      path: "assets"
-      logo: "logo.png"
-      rateImage: "rate-image.png"
+    ##  Soit on utilise un configmap existant => remplir la variable
+    ##  Soit on utilise les assets par défaut => variable vide.
+    assetsConfigmap: "jitsi-web-overlay-assets"
 
   ## APITECH : Ingress pour exposer l'overlay Joona.
   #  Doit être différent de celui du Jitsi sans overlay.

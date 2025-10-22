@@ -50,7 +50,17 @@ spec:
             - name: shared-meet
               mountPath: /usr/share/jitsi-meet
               readOnly: true
-          {{ range $path, $_ := .Files.Glob (printf "%s/**" (.Values.overlay.v1.assets.path)) }}
+          {{- if .Values.overlay.v1.assetsConfigmap }}
+            - name: {{ .Values.overlay.v1.assetsConfigmap }}
+              {{- /* Dans le code de la surcouche, si NODE_ENV est en production il faut monter dans /app/dist/public */}}
+              {{- if eq $.Values.overlay.v1.envValues.NODE_ENV "development" }}
+              mountPath: /app/public/pictures/client
+              {{- else }}
+              mountPath: /app/dist/public/pictures/client
+              {{- end }}
+              readOnly: true
+          {{- else }}
+          {{ range $path, $_ := .Files.Glob "assets/**" }}
             - name: assets
               {{- /* Dans le code de la surcouche, si NODE_ENV est en production il faut monter dans /app/dist/public */}}
               {{- if eq $.Values.overlay.v1.envValues.NODE_ENV "development" }}
@@ -60,6 +70,7 @@ spec:
               {{- end }}
               subPath: {{ base $path }}
               readOnly: true
+          {{- end }}
           {{- end }}
           {{- with .Values.overlay.v1.extraVolumeMounts }}
           {{- toYaml . | nindent 10 }}
@@ -80,6 +91,11 @@ spec:
         - name: shared-meet
           persistentVolumeClaim:
             claimName: {{ include "jitsi-meet.web.fullname" . }}-shared-meet
+        {{- if .Values.overlay.v1.assetsConfigmap }}
+        - name: {{ .Values.overlay.v1.assetsConfigmap }}
+          configMap:
+            name: {{ .Values.overlay.v1.assetsConfigmap }}
+        {{- else }}
         - name: assets
           configMap:
             name: {{ include "jitsi-meet.overlay.v1.fullname" . }}-assets
@@ -88,6 +104,7 @@ spec:
               - key: {{ base $path }}
                 path: {{ base $path }}
             {{- end }}
+        {{- end }}
 
       {{- with .Values.web.nodeSelector }}
       nodeSelector:
