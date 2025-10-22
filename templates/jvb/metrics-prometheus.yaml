@@ -1,10 +1,13 @@
 {{- if and (.Values.jvb.metrics.enabled) (.Values.jvb.metrics.serviceMonitor.enabled) }}
 {{- range $shard := until (int $.Values.jvb.replicaCount) }}
+{{/*
+Chaque métrique a son propre ServiceMonitor, car la première a besoin de cibler son propre JVB, l'autre doit cibler tous les JVBs.
+*/}}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ printf "%s-%d" (include "jitsi-meet.jvb.fullname" $) $shard }}
+  name: {{ printf "%s-%d" (include "jitsi-meet.jvb.fullname" $) $shard }}-metrics
   labels:
     jvb-shard: {{ printf "%s-%d" (include "jitsi-meet.jvb.fullname" $) $shard }}
     {{ include "jitsi-meet.jvb.labels" $ | nindent 4 }}
@@ -22,8 +25,9 @@ spec:
       interval: {{ . }}
       {{- end }}
       relabelings:
-        - sourceLabels: [__meta_kubernetes_pod_name]
-          targetLabel: pod
+        - sourceLabels: [__meta_kubernetes_service_name]
+          targetLabel: job
+      
   selector:
     matchLabels:
       jvb-shard: {{ printf "%s-%d" (include "jitsi-meet.jvb.fullname" $) $shard }}
@@ -33,3 +37,35 @@ spec:
       - {{ $.Release.Namespace }}
 {{- end }}
 {{- end }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "jitsi-meet.jvb.fullname" . }}-ape
+  labels:
+    {{ include "jitsi-meet.jvb.labels" . | nindent 4 }}
+    {{- with .Values.jvb.metrics.serviceMonitor.selector }}
+    {{ toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  endpoints:
+    - port: tcp-ape-metrics
+      path: /
+      {{- with .Values.jvb.metrics.serviceMonitor.honorLabels }}
+      honorLabels: {{ . }}
+      {{- end }}
+      {{- with .Values.jvb.metrics.serviceMonitor.interval }}
+      interval: {{ . }}
+      {{- end }}
+      relabelings:
+        - targetLabel: job
+          replacement: apitech-prometheus-exporter
+        - sourceLabels: [__meta_kubernetes_pod_label_jvb_shard]
+          targetLabel: jvb_name
+      
+  selector:
+    matchLabels:
+      {{ include "jitsi-meet.jvb.labels" . | nindent 6 }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}

@@ -37,7 +37,7 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/jvb/configmap.yaml") $ | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/jvb/xmpp-secret.yaml") $ | sha256sum }}
         {{- if and $.Values.jvb.metrics.enabled  $.Values.jvb.metrics.prometheusAnnotations  }}
-        prometheus.io/port: "9888"
+        prometheus.io/port: "9888,8090"
         prometheus.io/scrape: "true"
         {{- end }}
       {{- range $annotation, $value := mergeOverwrite $.Values.global.podAnnotations $.Values.jvb.podAnnotations }}
@@ -46,7 +46,7 @@ spec:
     spec:
       {{- with $.Values.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml $ | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "jitsi-meet.serviceAccountName" $ }}
       securityContext:
@@ -141,8 +141,8 @@ spec:
 
         {{- if $.Values.jvb.metrics.enabled }}
         - name: metrics
-          image: {{ $.Values.jvb.metrics.image.repository }}:{{ $.Values.jvb.metrics.image.tag }}
-          imagePullPolicy: {{ $.Values.jvb.metrics.image.pullPolicy }}
+          image: {{ $.Values.jvb.metrics.defaultJitsiMeetExporter.image.repository }}:{{ $.Values.jvb.metrics.defaultJitsiMeetExporter.image.tag }}
+          imagePullPolicy: {{ $.Values.jvb.metrics.defaultJitsiMeetExporter.image.pullPolicy }}
           securityContext:
             runAsUser: 10001
           command:
@@ -160,7 +160,24 @@ spec:
             initialDelaySeconds: 3
             periodSeconds: 5
           resources:
-        {{- toYaml $.Values.jvb.metrics.resources | nindent 12 }}
+        {{- toYaml $.Values.jvb.metrics.defaultJitsiMeetExporter.resources | nindent 12 }}
+        - name: apitech-metrics
+          image: {{ $.Values.jvb.metrics.apitechPrometheusExporter.image.repository }}:{{ $.Values.jvb.metrics.apitechPrometheusExporter.image.tag }}
+          imagePullPolicy: {{ $.Values.jvb.metrics.apitechPrometheusExporter.image.pullPolicy }}
+          securityContext:
+            runAsUser: 10001
+          ports:
+            - containerPort: 8090
+              name: tcp-ape-metrics
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8090
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          resources:
+        {{- toYaml $.Values.jvb.metrics.apitechPrometheusExporter.resources | nindent 12 }}
       {{- end }}
 
       {{- with $.Values.jvb.nodeSelector }}

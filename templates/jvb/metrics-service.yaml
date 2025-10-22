@@ -1,5 +1,8 @@
 {{- if .Values.jvb.metrics.enabled }}
 {{- range $shard := until (int .Values.jvb.replicaCount) }}
+{{/*
+Chaque métrique a son propre service, car la première a besoin de cibler son propre JVB, l'autre doit cibler tous les JVBs.
+*/}}
 ---
 apiVersion: v1
 kind: Service
@@ -19,3 +22,18 @@ spec:
     {{ include "jitsi-meet.jvb.selectorLabels" $ | nindent 4 }}
 {{- end }}
 {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "jitsi-meet.jvb.fullname" . }}-ape
+  labels:
+    {{ include "jitsi-meet.jvb.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8090
+      protocol: TCP
+      name: tcp-ape-metrics
+  selector:
+    {{ include "jitsi-meet.jvb.selectorLabels" . | nindent 4 }}
