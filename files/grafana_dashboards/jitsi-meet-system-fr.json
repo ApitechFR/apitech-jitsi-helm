@@ -11,6 +11,12 @@
   ],
   "__requires": [
     {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
@@ -48,16 +54,15 @@
       }
     ]
   },
-  "description": "Dashboard for Jitsi Meet Exporter",
+  "description": "Tableau de bord pour l’exportateur Jitsi Meet",
   "editable": true,
-  "gnetId": 12098,
+  "gnetId": 12282,
   "graphTooltip": 1,
   "id": null,
-  "iteration": 1612608944252,
+  "iteration": 1613598823724,
   "links": [],
   "panels": [
     {
-      "collapsed": false,
       "datasource": null,
       "gridPos": {
         "h": 1,
@@ -66,14 +71,252 @@
         "y": 0
       },
       "id": 40,
-      "panels": [],
-      "title": "Key Metrics",
+      "title": "Métriques clés",
       "type": "row"
     },
     {
       "cacheTimeout": null,
       "datasource": "Prometheus",
-      "description": "The total incoming bitrate for the video bridge in kilobits per second.",
+      "description": "État d’occupation global de tous les cœurs du processeur.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "max": 100,
+          "min": 0,
+          "nullValueMode": "null",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 85
+              },
+              {
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 1
+      },
+      "id": 44,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "7.3.7",
+      "targets": [
+        {
+          "expr": "(((count(count(node_cpu_seconds_total{job=~\"$job.*\"}) by (cpu))) - avg(sum by (mode)(irate(node_cpu_seconds_total{mode='idle',job=~\"$job.*\"}[5m])))) * 100) / count(count(node_cpu_seconds_total{job=~\"$job.*\"}) by (cpu))",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A",
+          "step": 900
+        }
+      ],
+      "title": "Charge CPU",
+      "type": "gauge"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "Prometheus",
+      "description": "Mémoire RAM non disponible.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 0,
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "nullValueMode": "null",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 80
+              },
+              {
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      },
+      "hideTimeOverride": false,
+      "id": 46,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "7.3.7",
+      "targets": [
+        {
+          "expr": "((node_memory_MemTotal_bytes{job=~\"$job.*\"} - node_memory_MemFree_bytes{job=~\"$job.*\"}) / (node_memory_MemTotal_bytes{job=~\"$job.*\"} )) * 100",
+          "format": "time_series",
+          "hide": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A",
+          "step": 900
+        },
+        {
+          "expr": "100 - ((node_memory_MemAvailable_bytes{job=~\"$job.*\"} * 100) / node_memory_MemTotal_bytes{job=~\"$job.*\"})",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "B",
+          "step": 900
+        }
+      ],
+      "title": "Mémoire RAM utilisée",
+      "type": "gauge"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "displayName": "",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "semi-dark-green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decgbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 1
+      },
+      "id": 48,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.7",
+      "targets": [
+        {
+          "expr": "sum(node_network_receive_bytes_total{job=~\"$job.*\"})*(9.31*10^-10)",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "Incoming ",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(node_network_transmit_bytes_total{job=~\"$job.*\"})*(9.31*10^-10)",
+          "interval": "",
+          "legendFormat": "Outgoing",
+          "refId": "B"
+        },
+        {
+          "expr": "(sum(node_network_receive_bytes_total{job=~\"$job.*\"})+sum(node_network_transmit_bytes_total{job=~\"$job.*\"}))*(9.31*10^-10)",
+          "interval": "",
+          "legendFormat": "Total",
+          "refId": "C"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Volume de données transférées",
+      "type": "stat"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "Prometheus",
+      "description": "Débit total entrant pour le pont vidéo, en kilobits par seconde.",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -104,7 +347,7 @@
         "h": 4,
         "w": 3,
         "x": 0,
-        "y": 1
+        "y": 6
       },
       "id": 18,
       "interval": null,
@@ -140,13 +383,13 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Bitrate Download",
+      "title": "Débit descendant",
       "type": "stat"
     },
     {
       "cacheTimeout": null,
       "datasource": "Prometheus",
-      "description": "The total outgoing bitrate for the video bridge in kilobits per second.",
+      "description": "Débit total sortant pour le pont vidéo, en kilobits par seconde.",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -177,7 +420,7 @@
         "h": 4,
         "w": 3,
         "x": 3,
-        "y": 1
+        "y": 6
       },
       "id": 19,
       "interval": null,
@@ -213,13 +456,13 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Bitrate Upload",
+      "title": "Débit montant",
       "type": "stat"
     },
     {
       "cacheTimeout": null,
       "datasource": "Prometheus",
-      "description": "The number of Java threads that the video bridge is using.",
+      "description": "Nombre de threads Java utilisés par le pont vidéo.",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -250,7 +493,7 @@
         "h": 4,
         "w": 3,
         "x": 6,
-        "y": 1
+        "y": 6
       },
       "id": 9,
       "interval": null,
@@ -286,13 +529,13 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Threads",
+      "title": "Threads Java",
       "type": "stat"
     },
     {
       "cacheTimeout": null,
       "datasource": "Prometheus",
-      "description": "An estimation of the number of current video streams forwarded by the bridge.",
+      "description": "Estimation du nombre actuel de flux vidéo transmis par le pont.",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -323,7 +566,7 @@
         "h": 4,
         "w": 3,
         "x": 9,
-        "y": 1
+        "y": 6
       },
       "id": 20,
       "interval": null,
@@ -359,13 +602,13 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Videostreams",
+      "title": "Flux vidéo",
       "type": "stat"
     },
     {
       "cacheTimeout": null,
       "datasource": "Prometheus",
-      "description": "An average value (in milliseconds) of the RTT across all streams.",
+      "description": "Valeur moyenne du RTT sur l’ensemble des flux (en millisecondes).",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -396,7 +639,7 @@
         "h": 4,
         "w": 3,
         "x": 12,
-        "y": 1
+        "y": 6
       },
       "id": 22,
       "interval": null,
@@ -432,13 +675,13 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "RTT",
+      "title": "Aller-retour moyen (RTT)",
       "type": "stat"
     },
     {
       "cacheTimeout": null,
       "datasource": "Prometheus",
-      "description": "The sum of the lengths of all completed conferences, in seconds.",
+      "description": "Somme des durées de toutes les conférences terminées, en secondes.",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -469,7 +712,7 @@
         "h": 4,
         "w": 3,
         "x": 15,
-        "y": 1
+        "y": 6
       },
       "id": 21,
       "interval": null,
@@ -505,13 +748,13 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Completed Conferences",
+      "title": "Conférences terminées",
       "type": "stat"
     },
     {
       "cacheTimeout": null,
       "datasource": "Prometheus",
-      "description": "The number of participants in the largest conference currently hosted on the bridge.",
+      "description": "Nombre de participants dans la plus grande conférence actuellement hébergée sur le pont.",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -542,7 +785,7 @@
         "h": 4,
         "w": 3,
         "x": 18,
-        "y": 1
+        "y": 6
       },
       "id": 10,
       "interval": null,
@@ -578,13 +821,13 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Biggest Conference",
+      "title": "Plus grande conférence",
       "type": "stat"
     },
     {
       "cacheTimeout": null,
       "datasource": "Prometheus",
-      "description": "The total number of conferences created on the bridge.",
+      "description": "Nombre total de conférences créées sur le pont.",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -615,7 +858,7 @@
         "h": 4,
         "w": 3,
         "x": 21,
-        "y": 1
+        "y": 6
       },
       "id": 8,
       "interval": null,
@@ -651,7 +894,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Total Conferences",
+      "title": "Nombre total de conférences",
       "type": "stat"
     },
     {
@@ -661,7 +904,7 @@
       "dashes": false,
       "datasource": "Prometheus",
       "decimals": null,
-      "description": "The current number of conferences.",
+      "description": "Nombre actuel de conférences.",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -675,7 +918,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 5
+        "y": 10
       },
       "hiddenSeries": false,
       "id": 2,
@@ -722,7 +965,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Conferences",
+      "title": "Conférences en cours",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -766,7 +1009,7 @@
       "dashes": false,
       "datasource": "Prometheus",
       "decimals": null,
-      "description": "The current number of participants.",
+      "description": "Nombre actuel de participants.",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -780,7 +1023,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 5
+        "y": 10
       },
       "hiddenSeries": false,
       "id": 3,
@@ -865,7 +1108,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 18
       },
       "id": 42,
       "panels": [
@@ -875,7 +1118,7 @@
           "dashLength": 10,
           "dashes": false,
           "datasource": "Prometheus",
-          "description": "The total incoming/outgoing bitrate for the video bridge in kilobits per second.",
+          "description": "Débit total entrant/sortant pour le pont vidéo, en kilobits par seconde.",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -935,7 +1178,7 @@
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "Bitrate",
+          "title": "Débit global (entrant/sortant)",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -1038,7 +1281,7 @@
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "Package Rate",
+          "title": "Taux de paquets",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -1141,7 +1384,7 @@
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "Lost RTP packets",
+          "title": "Paquets RTP perdus",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -1184,7 +1427,7 @@
           "dashLength": 10,
           "dashes": false,
           "datasource": "Prometheus",
-          "description": "Experimental. An average value (in milliseconds) of the jitter calculated for incoming and outgoing streams. This hasn't been tested and it is currently not known whether the values are correct or not.",
+          "description": "Expérimental. Valeur moyenne (en millisecondes) de la gigue calculée pour les flux entrants et sortants. Non vérifié.",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -1231,7 +1474,7 @@
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "Jitter Aggregate",
+          "title": "Gigue moyenne",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -1274,7 +1517,7 @@
           "dashLength": 10,
           "dashes": false,
           "datasource": "Prometheus",
-          "description": "An average value (in milliseconds) of the RTT across all streams.",
+          "description": "Valeur moyenne du RTT sur l’ensemble des flux (en millisecondes).",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -1321,7 +1564,7 @@
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "RTT",
+          "title": "Aller-retour moyen (RTT)",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -2105,6 +2348,111 @@
             "align": false,
             "alignLevel": null
           }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "description": "Stress Level reported to Jicofo by the videobridge.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {},
+              "custom": {},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": []
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 67
+          },
+          "hiddenSeries": false,
+          "id": 51,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.4.2",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "jitsi_stress_level{job=~\"$job.*\"}",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "stress level",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Videobridge Stress Level",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
         }
       ],
       "title": "Additional Metrics",
@@ -2131,7 +2479,7 @@
         "options": [],
         "query": "label_values(jitsi_conferences, job)",
         "refresh": 1,
-        "regex": ".*",
+        "regex": ".*jicofo.*",
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
@@ -2160,7 +2508,7 @@
     ]
   },
   "timezone": "",
-  "title": "Jitsi Meet",
-  "uid": "wX13E8RGz",
-  "version": 3
+  "title": "Jitsi Meet & Système",
+  "uid": "kjhXGWCaz",
+  "version": 5
 }
