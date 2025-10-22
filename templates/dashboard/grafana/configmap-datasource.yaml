@@ -14,4 +14,23 @@ data:
         access: proxy
         url: http://prometheus-operated.{{ .Release.Namespace }}.svc.cluster.local:9090
         isDefault: true
+  mysql.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: MySQL
+        type: mysql
+        access: proxy
+        {{- if .Values.overlay.database.useExternalDatabase }}
+        url: {{ .Values.overlay.database.externalDatabase.host }}:{{ .Values.overlay.database.externalDatabase.port }}
+        database: {{ .Values.overlay.database.externalDatabase.database }}
+        user: {{ .Values.overlay.database.externalDatabase.user }}
+        secureJsonData:
+          password: {{ .Values.overlay.database.externalDatabase.password }}
+        {{- else }}
+        url: {{ include "jitsi-meet.overlay.database.fullname" . }}:3306
+        database: {{ .Values.overlay.database.auth.database }}
+        user: {{ .Values.overlay.database.auth.user }}
+        secureJsonData:
+          password: {{ default (randAlphaNum 16) .Values.overlay.database.auth.password }}
+        {{- end }}
 {{- end }}
