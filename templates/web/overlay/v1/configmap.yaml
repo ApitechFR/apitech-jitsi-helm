@@ -9,8 +9,10 @@ data:
     JITSI_VERSION: 2.0.{{ .Chart.AppVersion | replace "stable-" "" }}
     JWT_APP_ID: {{ .Values.jwt.appId | quote }}
     JWT_SECRET: {{ .Values.jwt.secret | quote }}
-    TOPBAR_LOGO: "/pictures/client/{{ .Values.overlay.v1.assets.logo | default "logo.png" }}"
-    RATE_IMG_SRC: "/pictures/client/{{ .Values.overlay.v1.assets.rateImage }}"
+    # TOPBAR_LOGO: "/pictures/client/{{ .Values.overlay.v1.assets.logo | default "logo.png" }}"
+    # RATE_IMG_SRC: "/pictures/client/{{ .Values.overlay.v1.assets.rateImage }}"
+    TOPBAR_LOGO: "/pictures/client/logo.png"
+    RATE_IMG_SRC: "/pictures/client/rate-image.png"
     {{- if .Values.overlay.database.useExternalDatabase }}
     MARIADB_SERVER: {{ .Values.overlay.database.externalDatabase.host }}
     MARIADB_DB: {{ .Values.overlay.database.externalDatabase.database }}
