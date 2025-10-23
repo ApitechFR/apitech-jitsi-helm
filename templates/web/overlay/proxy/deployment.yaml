@@ -21,6 +21,28 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      initContainers:
+        - name: wait-for-overlay
+          image: curlimages/curl:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: WEB_URL
+              value: "{{ include "jitsi-meet.overlay.v1.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:3000"
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for ${WEB_URL} to become available..."
+              for i in $(seq 1 300); do
+                if curl -fsSL --max-time 3 "${WEB_URL}" > /dev/null 2>&1; then
+                  echo "✅ Webpage is reachable!"
+                  exit 0
+                fi
+                echo "⏳ Attempt $i: ${WEB_URL} not reachable yet..."
+                sleep 3
+              done
+              echo "❌ Timed out waiting for ${WEB_URL}"
+              exit 1
       containers:
         - name: proxy
           image: {{ .Values.overlay.v1.proxy.image.repository }}:{{ .Values.overlay.v1.proxy.image.tag }}
