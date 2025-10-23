@@ -252,14 +252,14 @@ Parameter | Description | Default
 `jvb.readinessProbe` | Map that holds the readiness probe, you can add parameters such as timeout or retries following the Kubernetes spec | A readinessProbe map
 `jvb.metrics.enabled` | Boolean that control the metrics exporter for jvb. If true the `ServiceMonitor` will also created | `false`
 `jvb.metrics.prometheusAnnotations` | Boolean that controls the generation of prometheus annotations, to expose metrics for HPA | `false`
-`jvb.metrics.image.repository` | Default image repository for metrics exporter | `docker.io/systemli/prometheus-jitsi-meet-exporter`
-`jvb.metrics.image.tag` | Default tag for metrics exporter | `1.1.5`
-`jvb.metrics.image.pullPolicy` | ImagePullPolicy for metrics exporter | `IfNotPresent`
+`jvb.metrics.defaultJitsiMeetExporter.image.repository` | Default image repository for metrics exporter | `docker.io/systemli/prometheus-jitsi-meet-exporter`
+`jvb.metrics.defaultJitsiMeetExporter.image.tag` | Default tag for metrics exporter | `1.1.5`
+`jvb.metrics.defaultJitsiMeetExporter.image.pullPolicy` | ImagePullPolicy for metrics exporter | `IfNotPresent`
 `jvb.metrics.serviceMonitor.enabled` | `ServiceMonitor` for Prometheus | `true`
 `jvb.metrics.serviceMonitor.selector` | Selector for `ServiceMonitor` | `{ release: prometheus-operator }`
 `jvb.metrics.serviceMonitor.interval` | Interval for `ServiceMonitor` | `10s`
 `jvb.metrics.serviceMonitor.honorLabels` | Make `ServiceMonitor` honor labels | `false`
-`jvb.metrics.resources` | Resources for the metrics container | `{ requests: { cpu: 10m, memory: 16Mi }, limits: { cpu: 20m, memory: 32Mi } }`
+`jvb.metrics.defaultJitsiMeetExporter.resources` | Resources for the metrics container | `{ requests: { cpu: 10m, memory: 16Mi }, limits: { cpu: 20m, memory: 32Mi } }`
 `octo.enabled` | Boolean to enable or disable the OCTO mode, for a single region | `false`
 `web.httpsEnabled` | Boolean that enabled tls-termination on the web pods. Useful if you expose the UI via a `Loadbalancer` IP instead of an ingress | `false`
 `web.httpRedirect` | Boolean that enabled http-to-https redirection. Useful for ingress that don't support this feature (ex: GKE ingress) | `false`
