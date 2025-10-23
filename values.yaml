@@ -35,6 +35,7 @@ authConfig: &authConfig
 
 <<: *authConfig
 
+### APITECH : Secret Kubernetes pour l'authentification aux regisitries privées
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
@@ -101,10 +102,10 @@ web:
   ingress:
     enabled: true
     ingressClassName: "nginx"
-    annotations: 
+    annotations:
       ## APITECH : Annotations génriques, ne devraient pas être modifiées
-      nginx.org/proxy-read-timeout: "3600"
-      nginx.org/proxy-send-timeout: "3600"
+      nginx.org/proxy-read-timeout: "3600" # Nécessaire pour les WebSockets
+      nginx.org/proxy-send-timeout: "3600" # Nécessaire pour les WebSockets
       nginx.org/server-snippet: |
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "Upgrade";
@@ -125,7 +126,7 @@ web:
 
   # When tls-termination by the ingress is not wanted, enable this and set web.service.type=Loadbalancer
   httpsEnabled: false
-  
+
   ## APITECH : Désactivation de l'enregistrement local.
   ## Laisser à true sauf contre-indication.
   disableLocalRecording: true
@@ -227,7 +228,7 @@ overlay:
   ingress:
     enabled: true
     ingressClassName: "nginx"
-    annotations: 
+    annotations:
       ## APITECH : Annotations génriques, ne devraient pas être modifiées
       nginx.org/proxy-read-timeout: "3600"
       nginx.org/proxy-send-timeout: "3600"
@@ -354,7 +355,7 @@ jvb:
     type: LoadBalancer
     externalTrafficPolicy: Cluster
     udpPort: 10000
-    
+
     ## APITECH : Ces valeurs servent à construire les IPs LoadBalancer (internes au cluster!) des JVBs.
     # Veiller à ne pas écraser les IPs d'autres services LoadBalancer.
     # externalIPsPrefix est le préfixe des IPs (trois premiers octets),
@@ -401,7 +402,7 @@ jvb:
   securityContext: {}
   ## APITECH : Ressources du JVB.
   #  Valeurs ajustables selon le besoin.
-  resources: 
+  resources:
       requests:
         cpu: 3000m
         memory: 3000Mi
@@ -417,18 +418,34 @@ jvb:
   # Nécessaire pour le dashboard Grafana.
   metrics:
     enabled: true
-    image:
-      repository: docker.io/systemli/prometheus-jitsi-meet-exporter
-      tag: 1.2.3
-      pullPolicy: IfNotPresent
+    defaultJitsiMeetExporter:
+      image:
+        repository: docker.io/systemli/prometheus-jitsi-meet-exporter
+        tag: 1.2.3
+        pullPolicy: IfNotPresent
 
-    resources:
-      requests:
-        cpu: 10m
-        memory: 16Mi
-      limits:
-        cpu: 20m
-        memory: 32Mi
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+        limits:
+          cpu: 20m
+          memory: 32Mi
+    ### APITECH : Changer l'image de notre exporter custom.
+    apitechPrometheusExporter:
+      image:
+        ### APITECH : En cas d'utilisation d'une registry privée, veiller à configurer imagePullSecrets au niveau global.
+        repository: registry.git.joona.fr/apitech/apitech-prometheus-jvb-exporter
+        tag: latest
+        pullPolicy: Always
+
+      resources:
+        requests:
+          cpu: 500m
+          memory: 500Mi
+        limits:
+          cpu: 1000m
+          memory: 1Gi
 
     prometheusAnnotations: true
     serviceMonitor:
@@ -475,7 +492,7 @@ jigasi:
   # TODO : Remettre les probes une fois le problème corrigé dans l'image officielle.
   livenessProbe: null
   readinessProbe: null
-  # livenessProbe: 
+  # livenessProbe:
   #   httpGet:
   #     path: /about/health
   #     host: 127.0.0.1
@@ -555,7 +572,7 @@ jibri:
   shm:
     ## Set to true to enable "/dev/shm" mount.
     ## May be required by built-in Chromium.
-    enabled: false
+    enabled: true
     ## If "true", will use host's shared memory dir,
     ## and if "false" — an emptyDir mount.
     # useHost: false
@@ -712,7 +729,12 @@ prosody:
   image:
     repository: jitsi/prosody
     tag: stable-10314
-    
+  persistence:
+    enabled: true
+    size: 500Mi
+    ## APITECH : Le stockage doit être ReadWriteMany pour permettre les backups.
+    accessMode: "ReadWriteMany"
+    storageClass: "longhorn-single-no-retain"
   ## APITECH : Désactivation du module "end_conference".
   #  À laisser désactivé sauf contre-indication.
   enableEndConference: false
