@@ -30,22 +30,6 @@ app.kubernetes.io/component: web-overlay-v1
 app.kubernetes.io/component: web-overlay-v1
 {{- end -}}
 
-{# Overlay v3 #}
-
-{{- define "jitsi-meet.overlay.v3.fullname" -}}
-{{ include "jitsi-meet.fullname" . }}-overlay-v3
-{{- end -}}
-
-{{- define "jitsi-meet.overlay.v3.labels" -}}
-{{ include "jitsi-meet.labels" . }}
-app.kubernetes.io/component: web-overlay-v3
-{{- end -}}
-
-{{- define "jitsi-meet.overlay.v3.selectorLabels" -}}
-{{ include "jitsi-meet.selectorLabels" . }}
-app.kubernetes.io/component: web-overlay-v3
-{{- end -}}
-
 {# Overlay Proxy v1 #}
 
 {{- define "jitsi-meet.overlay.v1.proxy.fullname" -}}
@@ -60,6 +44,22 @@ app.kubernetes.io/component: web-proxy
 {{- define "jitsi-meet.overlay.v1.proxy.selectorLabels" -}}
 {{ include "jitsi-meet.selectorLabels" . }}
 app.kubernetes.io/component: web-proxy
+{{- end -}}
+
+{# Overlay v3 #}
+
+{{- define "jitsi-meet.overlay.v3.fullname" -}}
+{{ include "jitsi-meet.fullname" . }}-overlay-v3
+{{- end -}}
+
+{{- define "jitsi-meet.overlay.v3.labels" -}}
+{{ include "jitsi-meet.labels" . }}
+app.kubernetes.io/component: web-overlay-v3
+{{- end -}}
+
+{{- define "jitsi-meet.overlay.v3.selectorLabels" -}}
+{{ include "jitsi-meet.selectorLabels" . }}
+app.kubernetes.io/component: web-overlay-v3
 {{- end -}}
 
 {# Database #}
