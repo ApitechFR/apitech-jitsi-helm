@@ -18,6 +18,12 @@ data:
           proxy_set_header X-Real-IP $remote_addr;
         }
 
+        {{- if .Values.web.custom.jaliosExternalApiConfigmap }}
+        location = /jalios_external_api.js {
+          alias /usr/share/jitsi-meet/libs/jalios_external_api.min.js;
+        }
+        {{- end }}
+
         location = /config.js {
           proxy_pass http://{{ include "jitsi-meet.web.fullname" . }}:{{ .Values.web.service.port }};
           proxy_ssl_verify off;
