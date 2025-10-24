@@ -79,7 +79,7 @@ web:
   custom:
     ### APITECH : Possibilité d'utiliser un configmap externe pour override le fichier external_api.js
     ##  Veiller à bien le créer avant déployer le chart.
-    externalApiConfigmap: "custom-external-api" # ex: "my-external-api-configmap"
+    jaliosExternalApiConfigmap: "" # ex: "my-external-api-configmap"
     contInit:
       _10_config: ""
     defaults:
