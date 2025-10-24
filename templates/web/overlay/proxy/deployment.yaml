@@ -64,6 +64,11 @@ spec:
               subPath: nginx.conf
             - name: shared-meet
               mountPath: /usr/share/jitsi-meet
+            {{- if .Values.web.custom.jaliosExternalApiConfigmap }}
+            - name: {{ .Values.web.custom.jaliosExternalApiConfigmap }}
+              mountPath: /usr/share/jitsi-meet/libs/jalios_external_api.min.js
+              subPath: jalios_external_api.js
+            {{- end }}
       volumes:
         - name: nginx-config
           configMap:
@@ -71,4 +76,9 @@ spec:
         - name: shared-meet
           persistentVolumeClaim:
             claimName: {{ include "jitsi-meet.web.fullname" . }}-shared-meet
+        {{- if .Values.web.custom.jaliosExternalApiConfigmap }}
+        - name: {{ .Values.web.custom.jaliosExternalApiConfigmap }}
+          configMap:
+            name: {{ .Values.web.custom.jaliosExternalApiConfigmap }}
+        {{- end }}
 {{- end -}}
