@@ -124,6 +124,11 @@ spec:
               mountPath: /defaults/system-config.js
               subPath: system-config.js
             {{- end }}
+            {{- if .Values.web.custom.externalApiConfigmap }}
+            - name: {{ .Values.web.custom.externalApiConfigmap }}
+              mountPath: /usr/share/jitsi-meet/libs/external_api.min.js
+              subPath: external_api.js
+            {{- end }}
             {{- with .Values.web.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -191,7 +196,12 @@ spec:
         - name: shared-meet
           persistentVolumeClaim:
             claimName: {{ include "jitsi-meet.web.fullname" . }}-shared-meet
-        {{- end }}  
+        {{- end }}
+        {{- if .Values.web.custom.externalApiConfigmap }}
+        - name: {{ .Values.web.custom.externalApiConfigmap }}
+          configMap:
+            name: {{ .Values.web.custom.externalApiConfigmap }}
+        {{- end }}
         {{- with .Values.web.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
