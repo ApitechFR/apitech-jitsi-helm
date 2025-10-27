@@ -37,7 +37,7 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.web.securityContext | nindent 12 }}
-          image: "{{ .Values.web.image.repository }}:{{ default .Chart.AppVersion .Values.web.image.tag }}"
+          image: "{{ .Values.web.image.repository }}:{{ .Values.global.jitsiVersion | default .Values.web.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ pluck "pullPolicy" .Values.web.image .Values.image | first }}
           envFrom:
           - configMapRef:
@@ -131,7 +131,7 @@ spec:
       {{- if and .Values.overlay.enabled (eq .Values.overlay.mode "v1") }}
       initContainers:
         - name: {{ .Chart.Name }}-copy-jitsi-meet
-          image: "{{ .Values.web.image.repository }}:{{ default .Chart.AppVersion .Values.web.image.tag }}"
+          image: "{{ .Values.web.image.repository }}:{{ .Values.global.jitsiVersion | default .Values.web.image.tag | default .Chart.AppVersion }}"
           command: ["/bin/sh", "-c"]
           args:
             - cp -a /usr/share/jitsi-meet/* /jitsi-meet-volume/;

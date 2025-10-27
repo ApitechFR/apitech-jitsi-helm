@@ -37,8 +37,8 @@ Common labels
 {{- define "jitsi-meet.labels" -}}
 helm.sh/chart: {{ include "jitsi-meet.chart" . }}
 {{ include "jitsi-meet.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- if or .Values.global.jitsiVersion .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Values.global.jitsiVersion | default .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}

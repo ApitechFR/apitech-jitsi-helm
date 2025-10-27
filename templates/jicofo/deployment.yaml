@@ -56,7 +56,7 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.jicofo.securityContext | nindent 12 }}
-          image: "{{ .Values.jicofo.image.repository }}:{{ default .Chart.AppVersion .Values.jicofo.image.tag }}"
+          image: "{{ .Values.jicofo.image.repository }}:{{ .Values.global.jitsiVersion | default .Values.jicofo.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ pluck "pullPolicy" .Values.jicofo.image .Values.image | first }}
           envFrom:
           - secretRef:

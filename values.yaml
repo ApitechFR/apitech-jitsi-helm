@@ -6,6 +6,9 @@
 ### Remarque supplémentaire : Définir les mots de passe xmpp (prosody.xmpp.password, jicofo.xmpp.password, jvb.xmpp.password, jigasi.xmpp.password, jibri.xmpp.password et jibri.recorder.password) règle un bug qui force à redémarrer tous les composants après un upgrade.
 
 global:
+  ### APITECH : Version Jitsi
+  ##  Réécrase la version par défaut.
+  jitsiVersion: stable-10590
   # Set your cluster's DNS domain here.
   # "cluster.local" should work for most environments.
   # Set to "" to disable the use of FQDNs (default in older chart versions).

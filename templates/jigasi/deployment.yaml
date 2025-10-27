@@ -39,7 +39,7 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.jigasi.securityContext | nindent 12 }}
-          image: "{{ .Values.jigasi.image.repository }}:{{ default .Chart.AppVersion .Values.jigasi.image.tag }}"
+          image: "{{ .Values.jigasi.image.repository }}:{{ .Values.global.jitsiVersion | default .Values.jigasi.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ pluck "pullPolicy" .Values.jigasi.image .Values.image | first }}
           envFrom:
           - secretRef:
