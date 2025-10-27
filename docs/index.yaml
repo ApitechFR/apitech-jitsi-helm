@@ -12,7 +12,32 @@ entries:
           url: https://github.com/jitsi-contrib/jitsi-helm
     apiVersion: v2
     appVersion: stable-10314
-    created: "2025-10-24T18:42:39.353115119+02:00"
+    created: "2025-10-27T14:36:01.551487536+01:00"
+    dependencies:
+    - condition: prosody.enabled
+      name: prosody
+      repository: file://charts/prosody
+      version: 1.7.3
+    description: Jitsi Meet packaged for Kubernetes
+    digest: 0701f0ac5804a9f09e18ead8347962d87bf2a6b0e2428c8f20ee7426acaf448b
+    icon: https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet.png
+    name: jitsi-meet
+    type: application
+    urls:
+    - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-1.7.3.tgz
+    version: 1.7.3
+  - annotations:
+      artifacthub.io/category: streaming-messaging
+      artifacthub.io/links: |
+        - name: Jitsi Meet
+          url: https://jitsi.org/jitsi-meet/
+        - name: Jitsi Meet Documentation
+          url: https://jitsi.github.io/handbook/docs/intro/
+        - name: Jitsi-Helm GitHub
+          url: https://github.com/jitsi-contrib/jitsi-helm
+    apiVersion: v2
+    appVersion: stable-10314
+    created: "2025-10-27T14:36:01.540235439+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -37,7 +62,7 @@ entries:
           url: https://github.com/jitsi-contrib/jitsi-helm
     apiVersion: v2
     appVersion: stable-10314
-    created: "2025-10-24T18:42:39.349229829+02:00"
+    created: "2025-10-27T14:36:01.533408807+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -62,7 +87,7 @@ entries:
           url: https://github.com/jitsi-contrib/jitsi-helm
     apiVersion: v2
     appVersion: stable-10314
-    created: "2025-10-24T18:42:39.345897319+02:00"
+    created: "2025-10-27T14:36:01.527706903+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -87,7 +112,7 @@ entries:
           url: https://github.com/jitsi-contrib/jitsi-helm
     apiVersion: v2
     appVersion: stable-10314
-    created: "2025-10-24T18:42:39.342741333+02:00"
+    created: "2025-10-27T14:36:01.520593165+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -112,7 +137,7 @@ entries:
           url: https://github.com/jitsi-contrib/jitsi-helm
     apiVersion: v2
     appVersion: stable-10314
-    created: "2025-10-24T18:42:39.336767577+02:00"
+    created: "2025-10-27T14:36:01.505411875+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -137,7 +162,7 @@ entries:
           url: https://github.com/jitsi-contrib/jitsi-helm
     apiVersion: v2
     appVersion: stable-10314
-    created: "2025-10-24T18:42:39.332084386+02:00"
+    created: "2025-10-27T14:36:01.49842844+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -162,7 +187,7 @@ entries:
           url: https://github.com/jitsi-contrib/jitsi-helm
     apiVersion: v2
     appVersion: stable-10314
-    created: "2025-10-24T18:42:39.326474802+02:00"
+    created: "2025-10-27T14:36:01.485876353+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -187,7 +212,7 @@ entries:
           url: https://github.com/jitsi-contrib/jitsi-helm
     apiVersion: v2
     appVersion: stable-10133
-    created: "2025-10-24T18:42:39.324129868+02:00"
+    created: "2025-10-27T14:36:01.481309621+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -212,7 +237,7 @@ entries:
           url: https://github.com/jitsi-contrib/jitsi-helm
     apiVersion: v2
     appVersion: stable-9646
-    created: "2025-10-24T18:42:39.320882005+02:00"
+    created: "2025-10-27T14:36:01.474930994+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -237,7 +262,7 @@ entries:
           url: https://github.com/jitsi-contrib/jitsi-helm
     apiVersion: v2
     appVersion: stable-9646
-    created: "2025-10-24T18:42:39.319071887+02:00"
+    created: "2025-10-27T14:36:01.469492814+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -253,7 +278,7 @@ entries:
     version: 1.4.0
   - apiVersion: v2
     appVersion: stable-9111
-    created: "2025-10-24T18:42:39.316679997+02:00"
+    created: "2025-10-27T14:36:01.466968542+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -268,7 +293,7 @@ entries:
     version: 1.3.8
   - apiVersion: v2
     appVersion: stable-8719
-    created: "2025-10-24T18:42:39.315278769+02:00"
+    created: "2025-10-27T14:36:01.453430718+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -283,7 +308,7 @@ entries:
     version: 1.3.7
   - apiVersion: v2
     appVersion: stable-8719
-    created: "2025-10-24T18:42:39.313174451+02:00"
+    created: "2025-10-27T14:36:01.452354792+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -298,7 +323,7 @@ entries:
     version: 1.3.6
   - apiVersion: v2
     appVersion: stable-8319
-    created: "2025-10-24T18:42:39.311917877+02:00"
+    created: "2025-10-27T14:36:01.451113425+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -313,7 +338,7 @@ entries:
     version: 1.3.5
   - apiVersion: v2
     appVersion: stable-8319
-    created: "2025-10-24T18:42:39.310705454+02:00"
+    created: "2025-10-27T14:36:01.449861194+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -328,7 +353,7 @@ entries:
     version: 1.3.4
   - apiVersion: v2
     appVersion: stable-8252
-    created: "2025-10-24T18:42:39.309209358+02:00"
+    created: "2025-10-27T14:36:01.448513547+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -343,7 +368,7 @@ entries:
     version: 1.3.3
   - apiVersion: v2
     appVersion: stable-8218
-    created: "2025-10-24T18:42:39.307714446+02:00"
+    created: "2025-10-27T14:36:01.446998389+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -358,7 +383,7 @@ entries:
     version: 1.3.2
   - apiVersion: v2
     appVersion: stable-8044
-    created: "2025-10-24T18:42:39.305998128+02:00"
+    created: "2025-10-27T14:36:01.443572474+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -373,7 +398,7 @@ entries:
     version: 1.3.1
   - apiVersion: v2
     appVersion: stable-8044
-    created: "2025-10-24T18:42:39.301945736+02:00"
+    created: "2025-10-27T14:36:01.441496549+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -388,7 +413,7 @@ entries:
     version: 1.3.0
   - apiVersion: v2
     appVersion: stable-7830
-    created: "2025-10-24T18:42:39.299486896+02:00"
+    created: "2025-10-27T14:36:01.438418899+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -403,7 +428,7 @@ entries:
     version: 1.2.3
   - apiVersion: v2
     appVersion: stable-6865
-    created: "2025-10-24T18:42:39.296879667+02:00"
+    created: "2025-10-27T14:36:01.436751247+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -418,7 +443,7 @@ entries:
     version: 1.2.2
   - apiVersion: v2
     appVersion: stable-6865
-    created: "2025-10-24T18:42:39.294761832+02:00"
+    created: "2025-10-27T14:36:01.43525736+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -433,7 +458,7 @@ entries:
     version: 1.2.1
   - apiVersion: v2
     appVersion: stable-6865
-    created: "2025-10-24T18:42:39.292675304+02:00"
+    created: "2025-10-27T14:36:01.433589642+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -448,7 +473,7 @@ entries:
     version: 1.2.0
   - apiVersion: v2
     appVersion: stable-6726
-    created: "2025-10-24T18:42:39.290810283+02:00"
+    created: "2025-10-27T14:36:01.432486392+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -463,7 +488,7 @@ entries:
     version: 1.1.0
   - apiVersion: v2
     appVersion: stable-6433
-    created: "2025-10-24T18:42:39.289005995+02:00"
+    created: "2025-10-27T14:36:01.42970481+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -478,7 +503,7 @@ entries:
     version: 1.0.0
   - apiVersion: v2
     appVersion: stable-5963
-    created: "2025-10-24T18:42:39.285607937+02:00"
+    created: "2025-10-27T14:36:01.428348682+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -493,7 +518,7 @@ entries:
     version: 0.2.1
   - apiVersion: v2
     appVersion: stable-5963
-    created: "2025-10-24T18:42:39.283636709+02:00"
+    created: "2025-10-27T14:36:01.427123311+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -508,7 +533,7 @@ entries:
     version: 0.2.0
   - apiVersion: v2
     appVersion: stable-5390-3
-    created: "2025-10-24T18:42:39.281831261+02:00"
+    created: "2025-10-27T14:36:01.426044037+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -523,7 +548,7 @@ entries:
     version: 0.1.4
   - apiVersion: v2
     appVersion: stable-5390-3
-    created: "2025-10-24T18:42:39.279629649+02:00"
+    created: "2025-10-27T14:36:01.424471999+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -538,7 +563,7 @@ entries:
     version: 0.1.3
   - apiVersion: v2
     appVersion: stable-5390-3
-    created: "2025-10-24T18:42:39.276802955+02:00"
+    created: "2025-10-27T14:36:01.423012227+01:00"
     dependencies:
     - condition: prosody.enabled
       name: prosody
@@ -551,4 +576,4 @@ entries:
     urls:
     - https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet-0.1.2.tgz
     version: 0.1.2
-generated: "2025-10-24T18:42:39.271450478+02:00"
+generated: "2025-10-27T14:36:01.421317465+01:00"
