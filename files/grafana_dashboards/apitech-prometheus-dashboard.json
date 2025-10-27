@@ -597,7 +597,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "ape_jitsi_jvb_status_code{job=\"apitech-prometheus-exporter\", jvb_name=~\"$jvb\"}",
+          "expr": "avg by (jvb_name) (ape_jitsi_jvb_status_code{job=\"apitech-prometheus-exporter\", jvb_name=~\"$jvb\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
