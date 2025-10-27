@@ -28,6 +28,8 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ include "jitsi-meet.overlay.database.fullname" . }}-secret
+          env:
+            - TZ: {{ .Values.tz }}
           ports:
             - containerPort: 3306
               name: mariadb
