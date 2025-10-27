@@ -36,7 +36,7 @@ spec:
           {{- end }}
       containers:
         # Custom jitsi overlay
-        - name: {{ .Chart.Name }}-overlay
+        - name: overlay
           image: "{{ .Values.overlay.v1.image.repository }}:{{ .Values.overlay.v1.image.tag | default "latest" }}"
           imagePullPolicy: {{ .Values.overlay.v1.image.pullPolicy | default "IfNotPresent" }}
           envFrom:
@@ -46,6 +46,9 @@ spec:
           - secretRef:
               name: {{ include "jitsi-meet.overlay.database.fullname" . }}-secret
           {{- end }}
+          env:
+            - name: "TZ"
+              value: "{{ .Values.tz }}"
           volumeMounts:
             - name: shared-meet
               mountPath: /usr/share/jitsi-meet
