@@ -364,7 +364,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT date AS \"Date\", comment AS \"Commentaire\", room AS \"Conférence\", evaluation AS \"Evaluation\", user_agent as \"UserAgent\" FROM jitsi.rate WHERE $__timeFilter(date)",
+          "rawSql": "SELECT date AS \"Date\", comment AS \"Commentaire\", room AS \"Conférence\", evaluation AS \"Evaluation\", userAgent as \"UserAgent\" FROM jitsi.rate WHERE $__timeFilter(date)",
           "refId": "A",
           "sql": {
             "columns": [
