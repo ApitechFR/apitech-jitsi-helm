@@ -412,7 +412,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum by(jvb) (ape_jitsi_conferences{job=\"apitech-prometheus-exporter\", jvb_name=~\"$jvb\", conf_name=~\"^$server_name.*\"})",
+          "expr": "sum by(jvb_name) (ape_jitsi_conferences{job=\"apitech-prometheus-exporter\", jvb_name=~\"$jvb\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
