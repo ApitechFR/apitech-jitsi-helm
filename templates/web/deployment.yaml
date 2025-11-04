@@ -22,6 +22,23 @@ spec:
       {{- end }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/web/configmap.yaml") . | sha256sum }}
+        {{- if .Values.web.custom.contInit._10_config }}
+        checksum/init-config: {{ include (print $.Template.BasePath "/web/configmap-init.yaml") . | sha256sum }}
+        {{- end }}
+                {{- if or .Values.web.custom.configs._custom_config_js 
+                  .Values.web.custom.configs._custom_interface_config_js 
+                  .Values.web.custom.defaults._default 
+                  .Values.web.custom.defaults._ffdhe2048_txt 
+                  .Values.web.custom.defaults._interface_config_js 
+                  .Values.web.custom.defaults._meet_conf 
+                  .Values.web.custom.defaults._nginx_conf 
+                  .Values.web.custom.defaults._settings_config_js 
+                  .Values.web.custom.defaults._ssl_conf 
+                  .Values.web.custom.defaults._system_config_js 
+                  .Values.jibri.recording
+        }}
+        checksum/conffiles: {{ include (print $.Template.BasePath "/web/configmap-conffiles.yaml") . | sha256sum }}
+        {{- end }}
       {{- range $annotation, $value := mergeOverwrite .Values.global.podAnnotations .Values.web.podAnnotations }}
         {{ $annotation }}: {{ $value|quote }}
       {{- end }}
@@ -74,7 +91,7 @@ spec:
               mountPath: /etc/cont-init.d/10-config
               subPath: 10-config
             {{- end }}
-            {{- if .Values.web.custom.configs._custom_config_js }}
+            {{- if or .Values.web.custom.configs._custom_config_js .Values.jibri.recording }}
             - name: custom-conffiles
               mountPath: /config/custom-config.js
               subPath: custom-config.js

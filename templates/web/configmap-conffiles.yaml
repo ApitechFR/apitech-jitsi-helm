@@ -8,9 +8,28 @@ data:
   custom-config.js: |
   {{- if .Values.web.custom.configs._custom_config_js }}
     {{- .Values.web.custom.configs._custom_config_js | nindent 4 }}
-  {{- else }}
-  # Not providing /config/custom-config.js
   {{ end }}
+  {{- if .Values.jibri.recording }}
+    config['recordings'] = {
+      // IF true (default) recording audio and video is selected by default in the recording dialog.
+      recordAudioAndVideo: {{ .Values.web.recordings.recordAudioAndVideo | default "true" }},
+      // If true, shows a notification at the start of the meeting with a call to action button
+      // to start recording (for users who can do so).
+      suggestRecording: {{ .Values.web.recordings.suggestRecording | default "false" }},
+      // If true, shows a warning label in the prejoin screen to point out the possibility that
+      // the call you're joining might be recorded.
+      showPrejoinWarning: {{ .Values.web.recordings.showPrejoinWarning | default "true" }},
+      // If true, the notification for recording start will display a link to download the cloud recording.
+      showRecordingLink: {{ .Values.web.recordings.showRecordingLink | default "false" }},
+      // If true, mutes audio and video when a recording begins and displays a dialog
+      // explaining the effect of unmuting.
+      requireConsent: {{ .Values.web.recordings.requireConsent | default "true" }},
+      // If true consent will be skipped for users who are already in the meeting.
+      skipConsentInMeeting: {{ .Values.web.recordings.skipConsentInMeeting | default "false" }},
+      // Link for the recording consent dialog's "Learn more" link.
+      consentLearnMoreLink: '{{ .Values.web.recordings.consentLearnMoreLink }}',
+    };
+  {{- end }}
   custom-interface_config.js: |
   {{- if .Values.web.custom.configs._custom_interface_config_js }}
     {{- .Values.web.custom.configs._custom_interface_config_js | nindent 4 }}
