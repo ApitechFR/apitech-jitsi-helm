@@ -1,8 +1,95 @@
 overlay:
+  v3:
+    envValues:
+      ########################################
+      # Jitsi Web Overlay Configuration File #
+      ########################################
+
+      # AGENTCONNECT (OIDC)
+      AGENTCONNECT_PROXYURL: "https://proxy.example.com" # URL du proxy AgentConnect
+      AGENTCONNECT_CLIENTID: "client_id_example" # Client ID OIDC
+      AGENTCONNECT_SECRET: "secret_example" # Secret OIDC
+      AGENTCONNECT_URL: "https://agentconnect.example.com" # URL du provider OIDC
+      AGENTCONNECT_SCOPE: "openid email" # Scope OIDC, ex: openid email
+      AGENTCONNECT_REDIRECT_URL: "https://app.example.com/callback" # URL de redirection OIDC
+
+      # JITSI JWT
+      JITSI_JITSIJWT_EXPIRESAFTER: 60 # Durée de validité du token (minutes ou heures)
+
+      # EMAIL
+      EMAIL_FROM: "noreply@example.com" # Adresse email d'envoi
+      EMAIL_SUBJECT: "Invitation à la réunion" # Sujet de l'email
+      EMAIL_SMTP_POOL: "true" # Utiliser le pool SMTP (true/false)
+      EMAIL_SMTP_SECURE: "false" # Connexion SMTP sécurisée (true/false)
+      EMAIL_SMTP_HOST: "smtp.example.com" # Hôte SMTP
+      EMAIL_SMTP_PORT: 587 # Port SMTP
+      EMAIL_SMTP_AUTH_USER: "smtp_user" # Utilisateur SMTP
+      EMAIL_SMTP_AUTH_PASS: "smtp_password" # Mot de passe SMTP
+      EMAIL_SMTP_TLS_REJECTUNAUTHORIZED: "false" # Rejeter les certificats non autorisés (true/false)
+
+      # # JMMC
+      # JMMC_URL: "https://jmmc.example.com" # URL du service JMMC
+
+      # Autres
+      COOKIE_SECRET: "cookie_secret_example" # Secret pour les cookies
+      CORS_ORIGIN: "https://CHANGEME." # Origine autorisée pour CORS
+
+      # Base de données
+      DB_TYPE: "mariadb" # Type de base de données: mongodb ou mariadb
+
+      NODE_ENV: "production" # Environnement: development, production, etc.
+
+      # Frontend Configuration
+      JITSI_DOMAIN: "jitsi.CHANGEME.example.com" # Domaine Jitsi utilisé côté frontend
+      JITSI_JITSIJWT_SUB: "CHANGEME.example.com" # Subject JWT Jitsi  
+      VOXAPI_URL: "https://voxapi.example.com" # URL de l'API Voxify
+
+      # Variables communes frontend et backend
+      ENABLE_JIBRI_APITECH_API: "false" # Active l'API Jibri Apitech côté backend (true/false)
+      JIBRI_APITECH_API_DOMAIN: "jibri.example.com" # Domaine de l'API Jibri Apitech côté backend
+      REPLAY_CHECK_TIMEOUT_MS: 10000 # Timeout pour le check replay côté backend (ms)
+
+
+      # Frontend variables utilisées
+      APP_NAME: "Jitsi Web Overlay" # Nom de l'application
+      APP_ORGANIZATION: "Apitech Dev" # Nom de l'organisation
+      DEBUG: "true" # Active le debug frontend (true/false)
+      API_URL: "https://CHANGEME.example.com/api" # URL de l'API backend
+      APP_TEMPLATE: "joona" # Template d'application (ex: joona)
+      CONFERENCE_NAME_REGEX_MESSAGE: "Nom de conférence invalide" # Message d'erreur regex
+      CONFERENCE_NAME_REGEX: "^[a-zA-Z0-9_-]"
+      FRONTCONF_ROOMNAMECONSTRAINT_MINNUMBEROFDIGITS: "3"
+      FRONTCONF_ROOMNAMECONSTRAINT_LENGTH: "10"
+      APP_HEADERSERVICETITLE: "Visio" # Titre principal accolé au logo
+      APP_HEADERSERVICETAGLINE: "by Apitech" # Sous titre du titre principal
+      APP_FOOTERDESCRIPTION: "Apitech, Éditeur Open Solutions - L’esprit du Libre au service de la productivité."
+      APP_FOOTERLINKS: "apitech.fr"
+
+      # Backend variables supplémentaires
+      BACKEND_PORT: 3030 # Port d'écoute du backend
+      FRONTEND_BASE_URL: "https://CHANGEME.example.com" # URL du frontend
+      FRONTEND_LOGOUT_REDIRECT: "https://CHANGEME.example.com" # URL de redirection logout
+
+
+      OIDC_CLIENTID: "example_clientid"  # Client ID OIDC
+      OIDC_SECRET: ""  # Vide si client public
+      OIDC_SCOPE: "openid profile email"
+      OIDC_REDIRECT_URL: "/url/to/oidc_login/redirect/"
+      OIDC_LOGOUT_REDIRECT_URL: "/url/to/oidc_logout_redirect/"
+      # Endpoints OIDC Keycloak
+      OIDC_URL: "/url/to/oidc_server/"
+      AUTHORIZATION_ENDPOINT: "/url/to/oidc_authorization_endpoint/"
+      USERINFO_ENDPOINT: "/url/to/oidc_userinfo_endpoint/"
+      TOKEN_ENDPOINT: "/url/to/oidc_token_endpoint/"
+      OIDC_END_SESSION_ENDPOINT: "/url/to/oidc_end_session_endpoint/"
+
+      #COOKIE_DOMAIN: ".example.com" # Domaine des cookies
+      #COOKIE_SAMESITE: "lax" # SameSite des cookies
   v1:
     envValues:
-      OVERLAY_PORT: "3000"
-      NODE_ENV: production
+      OVERLAY_PORT: 3000
+      #NODE_ENV=development_or_production
+      NODE_ENV: "production"
       DEBUG: "false"
 
       # DOMAIN AND BRANDING
@@ -13,10 +100,10 @@ overlay:
       PATH_FAVICON: "favicon.ico"
 
       # UI CUSTOMIZATION
-      BASELINE: "L'outil de visioconférence sécurisée (DEV)"
+      BASELINE: "L'outil de visioconférence sécurisée"
       PRODUCT_NAME: "Joona"
       RATE_PRODUCT_NAME: "CHANGEME.mondomaine.tld"
-      RATE_CUSTOM_FOOTER: "\"margin: 20px;\">Pour toute implémentation spécifique :<br><a href=\"http://www.apitech.net\" target=\"_blank\">Apitech.fr</a> / <a href=\"mailto:contact@apitech.fr\">contact@apitech.fr</a></div>"
+      RATE_CUSTOM_FOOTER: "<div style=\"margin: 20px;\">Pour toute implémentation spécifique :<br><a href=\"http://www.apitech.net\" target=\"_blank\">Apitech.fr</a> / <a href=\"mailto:contact@apitech.fr\">contact@apitech.fr</a></div>"
       ABOUT_CREDIT: "<div style=\"padding:10px; width:calc(100% - 98px);\">Powered by <strong>Apitech</strong><br/><a href=\"http://www.apitech.net\">https://apitech.fr</a> / <a href=\"mailto:contact@apitech.fr\">contact@apitech.fr</a></div>"
       SHOW_BURGER_MENU: false
       DISPLAY_SUBJECT_ON_PREJOIN: false
@@ -29,12 +116,17 @@ overlay:
       #ONLINE RESOURCES
       HELP_LINK: "help/"
 
+      #REDIRECT_URI="url/to/redirect_after_action" relative or absolute path
       REDIRECT_URI: "/"
+      #EXTERNAL_API_PATH="path/to/external_api" absolute path
       EXTERNAL_API_PATH: external_api.js
 
+      #RATING_POST_URL="url/to/rating_webhook"
       RATING_POST_URL: ""
+      #RATING_POST_DATA_TEMPLATE="JSON formatted string for posting ratings"
       RATING_POST_DATA_TEMPLATE: ""
 
+      #WHATSNEW_ROOT_URL="url/to/whatsnew_page" relative or absolute path
       WHATSNEW_ROOT_URL: "https://version.joona.fr/changelogs/jitsi/"
 
       JITSI_WEB_OVERLAY_VERSION: "1.6.3"
@@ -56,6 +148,7 @@ overlay:
 
       OID_USE: false
       OID_APP_ID: "your_oidc_app_id"
+      OID_SECRET: ""
       OID_REDIRECT_URI: "url/to/oidc_redirect"
       OID_LOGOUT_URI: "url/to/oidc_logout"
       OID_URL: "url/to/oidc_server"
@@ -64,7 +157,7 @@ overlay:
       OID_LASTNAME_CLAIM: "family_name"
       OID_EMAIL_CLAIM: "email"
       HIDE_DISPLAYNAME_FIELD_IFJWT: true
-      OID_SCOPE: "openid email profile userinfo"
+      OID_SCOPE: "openid profile email"
 
       # LEGAL AND COMPLIANCE
       #ML_TEXT: "legal text"
