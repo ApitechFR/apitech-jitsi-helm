@@ -1,0 +1,16 @@
+{{- if and .Values.overlay.enabled (eq .Values.overlay.mode "v3") -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "jitsi-meet.overlay.v3.backend.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.overlay.v3.backend.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.overlay.v3.backend.service.type }}
+  ports:
+    - port: {{ .Values.overlay.v3.backend.service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "jitsi-meet.overlay.v3.backend.selectorLabels" . | nindent 4 }}
+{{- end -}}

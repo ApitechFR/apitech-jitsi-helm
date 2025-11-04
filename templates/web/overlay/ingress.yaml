@@ -7,8 +7,8 @@
     {{- $_ := set $ "fullName" (printf "%s-proxy" (include "jitsi-meet.overlay.v1.fullname" .)) -}}
     {{- $_ := set $ "svcPort" .Values.overlay.v1.proxy.service.port -}}
 {{- else if eq .Values.overlay.mode "v3" -}}
-    {{- $_ := set $ "fullName" (include "jitsi-meet.overlay.v3.fullname" .) -}}
-    {{- $_ := set $ "svcPort" .Values.overlay.v3.service.port -}}
+    {{- $_ := set $ "fullName" (include "jitsi-meet.overlay.v3.frontend.fullname" .) -}}
+    {{- $_ := set $ "svcPort" .Values.overlay.v3.frontend.service.port -}}
 {{- end -}}
 {{- $fullName := $.fullName -}}
 {{- $svcPort := $.svcPort -}}
@@ -36,6 +36,9 @@ metadata:
     kubernetes.io/ingress.class: {{ .Values.overlay.ingress.ingressClassName }}
     {{- end }}
     nginx.org/websocket-services: {{ $fullName }}
+    {{- if eq .Values.overlay.mode "v3" }}
+    nginx.org/rewrites: "serviceName={{ include "jitsi-meet.overlay.v3.backend.fullname" . }} rewrite=/"
+    {{- end }}
     {{- with .Values.overlay.ingress.annotations }}
     {{-   toYaml . | nindent 4 }}
     {{- end }}
@@ -75,6 +78,18 @@ spec:
             {{ else }}
               serviceName: {{ $fullName }}
               servicePort: {{ $svcPort }}
+            {{ end }}
+          - path: /api/
+            pathType: Prefix
+            backend:
+            {{ if semverCompare ">=1.19-0" $kubeVersion }}
+              service:
+                name: {{ include "jitsi-meet.overlay.v3.backend.fullname" $ }}
+                port:
+                  number: {{ $.Values.overlay.v3.backend.service.port }}
+            {{ else }}
+              serviceName: {{ include "jitsi-meet.overlay.v3.backend.fullname" $ }}
+              servicePort: {{ $.Values.overlay.v3.backend.service.port }}
             {{ end }}
         {{- end }}
   {{- end }}

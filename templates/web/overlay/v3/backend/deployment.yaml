@@ -1,0 +1,59 @@
+{{- if and .Values.overlay.enabled (eq .Values.overlay.mode "v3") -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jitsi-meet.overlay.v3.backend.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.overlay.v3.backend.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.overlay.v3.backend.replicas }}
+  selector:
+    matchLabels:
+      {{- include "jitsi-meet.overlay.v3.backend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "jitsi-meet.overlay.v3.backend.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/web/overlay/v3/configmap.yaml") . | sha256sum }}
+        {{- if not .Values.overlay.database.useExternalDatabase }}
+        checksum/secret: {{ include (print $.Template.BasePath "/web/overlay/database/secret.yaml") . | sha256sum }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-db
+          image: alpine:latest
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c", "for i in $(seq 1 300); do nc -zvw1 ${DB_HOST} 3306 && exit 0 || sleep 3; done; exit 1"]
+          {{- if not .Values.overlay.database.useExternalDatabase }}
+          envFrom:
+          - configMapRef:
+              name:  {{ include "jitsi-meet.overlay.v3.fullname" . }}-env
+          {{- end }}
+      
+      containers:
+        - name: overlay-backend
+          image: "{{ .Values.overlay.v3.backend.image.repository }}:{{ .Values.overlay.v3.backend.image.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.overlay.v3.backend.image.pullPolicy | default "IfNotPresent" }}
+          envFrom:
+            - configMapRef:
+                name:  {{ include "jitsi-meet.overlay.v3.fullname" . }}-env
+            {{- if not .Values.overlay.database.useExternalDatabase }}
+            - secretRef:
+                name: {{ include "jitsi-meet.overlay.database.fullname" . }}-secret
+            {{- end }}
+          {{- if .Values.overlay.v3.assetsConfigmap }}
+          volumeMounts:
+            - name: {{ .Values.overlay.v3.assetsConfigmap }}
+              {{- /* Dans le code de la surcouche, si NODE_ENV est en production il faut monter dans /app/dist/public */}}
+              {{- if eq $.Values.overlay.v3.envValues.NODE_ENV "development" }}
+              mountPath: /app/public/pictures/client
+              {{- else }}
+              mountPath: /app/dist/public/pictures/client
+          {{- end }}
+{{- end }}
+{{- end }}

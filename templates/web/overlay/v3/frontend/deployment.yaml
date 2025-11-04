@@ -1,0 +1,70 @@
+{{- if and .Values.overlay.enabled (eq .Values.overlay.mode "v3") -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jitsi-meet.overlay.v3.frontend.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.overlay.v3.frontend.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.overlay.v3.frontend.replicas }}
+  selector:
+    matchLabels:
+      {{- include "jitsi-meet.overlay.v3.frontend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "jitsi-meet.overlay.v3.frontend.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/web/overlay/v3/configmap.yaml") . | sha256sum }}
+        {{- if not .Values.overlay.database.useExternalDatabase }}
+        checksum/secret: {{ include (print $.Template.BasePath "/web/overlay/database/secret.yaml") . | sha256sum }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      # initContainers:
+      #   - name: wait-for-overlay
+      #     image: curlimages/curl:latest
+      #     imagePullPolicy: IfNotPresent
+      #     env:
+      #       - name: WEB_URL
+      #         value: "{{ include "jitsi-meet.overlay.v3.backend.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:3030/api"
+      #     command:
+      #       - sh
+      #       - -c
+      #       - |
+      #         echo "Waiting for ${WEB_URL} to become available..."
+      #         for i in $(seq 1 300); do
+      #           if curl -fsSL --max-time 3 "${WEB_URL}" > /dev/null 2>&1; then
+      #             echo "Webpage is reachable!"
+      #             exit 0
+      #           fi
+      #           echo "Attempt $i: ${WEB_URL} not reachable yet..."
+      #           sleep 3
+      #         done
+      #         echo "Timed out waiting for ${WEB_URL}"
+      #         exit 0
+      containers:
+        - name: overlay-frontend
+          image: "{{ .Values.overlay.v3.frontend.image.repository }}:{{ .Values.overlay.v3.frontend.image.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.overlay.v3.frontend.image.pullPolicy | default "IfNotPresent" }}
+          envFrom:
+            - configMapRef:
+                name:  {{ include "jitsi-meet.overlay.v3.fullname" . }}-env
+            {{- if not .Values.overlay.database.useExternalDatabase }}
+            - secretRef:
+                name: {{ include "jitsi-meet.overlay.database.fullname" . }}-secret
+            {{- end }}
+          {{- if .Values.overlay.v3.assetsConfigmap }}
+          volumeMounts:
+            - name: {{ .Values.overlay.v3.assetsConfigmap }}
+              {{- /* Dans le code de la surcouche, si NODE_ENV est en production il faut monter dans /app/dist/public */}}
+              {{- if eq $.Values.overlay.v3.envValues.NODE_ENV "development" }}
+              mountPath: /app/public/pictures/client
+              {{- else }}
+              mountPath: /app/dist/public/pictures/client
+          {{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,30 @@
+{{- if and .Values.overlay.enabled (eq .Values.overlay.mode "v3") -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "jitsi-meet.overlay.v3.fullname" . }}-env
+  labels:
+    {{- include "jitsi-meet.overlay.v3.labels" . | nindent 4 }}
+data:
+    PROSODY_DOMAIN: "meet.jitsi"
+    PROSODY_AVAILABLE_INSTANCES: "http://{{ include "jitsi-meet.xmpp.server" . }}:5280"
+    JICOFO_AVAILABLE_INSTANCES: "http://{{ include "jitsi-meet.jicofo.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8888"
+    JITSI_VERSION: 2.0.{{ .Values.global.jitsiVersion | default .Chart.AppVersion | replace "stable-" "" }}
+    JITSI_JITSIJWT_ISS: {{ .Values.jwt.appId | quote }}
+    JITSI_JITSIJWT_SECRET: {{ .Values.jwt.secret | quote }}
+    JWT_SECRET: {{ .Values.jwt.secret | quote }}
+    JITSI_JITSIJWT_AUD: "jitsi" # Audience JWT Jitsi
+    {{- if .Values.overlay.database.useExternalDatabase }}
+    DB_HOST: {{ .Values.overlay.database.externalDatabase.host }}
+    # DB_NAME: {{ .Values.overlay.database.externalDatabase.database }}
+    # DB_USERNAME: {{ .Values.overlay.database.externalDatabase.user }}
+    # DB_PASSWORD: {{ .Values.overlay.database.externalDatabase.password }}
+    {{- else }}
+    # {{/* Pas besoin de renseigner le user/password, c'est chargé dans le secret */}}
+    DB_HOST: {{ include "jitsi-meet.overlay.database.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+    # DB_NAME: {{ .Values.overlay.database.auth.database }}
+    {{- end }}
+  {{- range $key, $value := .Values.overlay.v3.envValues }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}

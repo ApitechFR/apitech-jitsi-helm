@@ -62,6 +62,38 @@ app.kubernetes.io/component: web-overlay-v3
 app.kubernetes.io/component: web-overlay-v3
 {{- end -}}
 
+{# Overlay v3 Backend #}
+
+{{- define "jitsi-meet.overlay.v3.backend.fullname" -}}
+{{ include "jitsi-meet.fullname" . }}-overlay-v3-backend
+{{- end -}}
+
+{{- define "jitsi-meet.overlay.v3.backend.labels" -}}
+{{ include "jitsi-meet.labels" . }}
+app.kubernetes.io/component: web-overlay-v3-backend
+{{- end -}}
+
+{{- define "jitsi-meet.overlay.v3.backend.selectorLabels" -}}
+{{ include "jitsi-meet.selectorLabels" . }}
+app.kubernetes.io/component: web-overlay-v3-backend
+{{- end -}}
+
+{# Overlay v3 Frontend #}
+
+{{- define "jitsi-meet.overlay.v3.frontend.fullname" -}}
+{{ include "jitsi-meet.fullname" . }}-overlay-v3-frontend
+{{- end -}}
+
+{{- define "jitsi-meet.overlay.v3.frontend.labels" -}}
+{{ include "jitsi-meet.labels" . }}
+app.kubernetes.io/component: web-overlay-v3-frontend
+{{- end -}}
+
+{{- define "jitsi-meet.overlay.v3.frontend.selectorLabels" -}}
+{{ include "jitsi-meet.selectorLabels" . }}
+app.kubernetes.io/component: web-overlay-v3-frontend
+{{- end -}}
+
 {# Database #}
 {{- define "jitsi-meet.overlay.database.fullname" -}}
 {{ include "jitsi-meet.fullname" . }}-overlay-db
