@@ -104,6 +104,17 @@ web:
     port: 80
     externalIPs: []
 
+  ## APITECH : Paramètres 'recordings' pour le web.
+  #  Surtout utilisé pour gérer le consentement des participants.
+  recordings:
+    recordAudioAndVideo: true
+    suggestRecording: false
+    showPrejoinWarning: true
+    showRecordingLink: true
+    requireConsent: true
+    skipConsentInMeeting: false
+    consentLearnMoreLink: ""
+
   ## APITECH : Ingress pour exposer le Jitsi SANS OVERLAY.
   ingress:
     enabled: true
@@ -213,7 +224,7 @@ overlay:
     ## APITECH : Le proxy prend le rôle du reverse proxy présent dans les VMs jitsi-web.
     # Indissociabe de l'overlay
     proxy:
-      replicas: 2
+      replicas: 1
       image:
         repository: nginx
         tag: stable
@@ -228,6 +239,33 @@ overlay:
     ##  Soit on utilise un configmap existant => remplir la variable
     ##  Soit on utilise les assets par défaut => variable vide.
     assetsConfigmap: "jitsi-web-overlay-assets"
+
+  ## APITECH : Configuration de l'overlay V3
+  v3:
+    backend:
+      replicas: 1 
+      image:
+        repository: "CHANGEME"
+        tag: "CHANGEME"
+        pullPolicy: IfNotPresent
+
+      service:
+        type: ClusterIP
+        port: 3030
+        externalIPs: []
+      
+    frontend:
+      replicas: 1
+      image:
+        repository: "CHANGEME"
+        tag: "CHANGEME"
+        pullPolicy: IfNotPresent
+
+      service:
+        type: ClusterIP
+        port: 80
+        externalIPs: []
+
 
   ## APITECH : Ingress pour exposer l'overlay Joona.
   #  Doit être différent de celui du Jitsi sans overlay.
@@ -266,14 +304,13 @@ overlay:
       ## APITECH : Le stockage doit être ReadWriteMany pour permettre les backups.
       accessMode: "ReadWriteMany"
       size: 5Gi
-      storageClass: "CHANGEME" 
-    
+      storageClass: "longhorn"
+
     auth:
       user: jitsi
       database: jitsi
       password:
       rootPassword:
-
 
 jicofo:
   replicaCount: 1
@@ -675,7 +712,7 @@ turn:
 
   externalIP: "1.2.3.4" # CHANGEME
   serverName: "meet.jitsi" # CHANGEME
-  
+
   service:
     port: 3478
     tlsPort: 5349
@@ -734,7 +771,6 @@ prosody:
       name: '{{ include "prosody.fullname" . }}-common'
   image:
     repository: jitsi/prosody
-    tag: stable-10314
   persistence:
     enabled: true
     size: 500Mi
@@ -744,6 +780,12 @@ prosody:
   ## APITECH : Désactivation du module "end_conference".
   #  À laisser désactivé sauf contre-indication.
   enableEndConference: false
+
+  ## APITECH : Modules XMPP supplémentaires
+  #  Par défaut, rien à ajouter. Le module muc_size nécessaire pour l'overlay v3 est déjà inclus.
+  xmppModules: []
+    # - mod_measure_client_presence
+    # - mod_custom_presence
 
   # service:
   #   ports:
