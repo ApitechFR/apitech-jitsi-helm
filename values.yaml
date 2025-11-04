@@ -309,8 +309,8 @@ overlay:
     auth:
       user: jitsi
       database: jitsi
-      password:
-      rootPassword:
+      password: CHANGEME
+      rootPassword: CHANGEME
 
 jicofo:
   replicaCount: 1
@@ -327,7 +327,7 @@ jicofo:
       _logging_properties: ""
 
   xmpp:
-    password:
+    password: CHANGEME
     componentSecret:
 
   livenessProbe:
@@ -364,7 +364,7 @@ jvb:
 
   xmpp:
     user: jvb
-    password:
+    password: CHANGEME
 
   ## APITECH : Le fonctionnement des JVBs est assez spécial. Ici, vous devez __impérativement__ 
   # spécifier autant d'IP publiques que de JVBs déployés (cf. jvb.replicaCount).
@@ -529,7 +529,7 @@ jigasi:
   ## jigasi XMPP user credentials:
   xmpp:
     user: jigasi
-    password:
+    password: CHANGEME
 
   ## APITECH : Avec la version actuelle de Jigasi, les probes sont cassées (les routes sont en écoute sur le loopback).
   # TODO : Remettre les probes une fois le problème corrigé dans l'image officielle.
@@ -642,12 +642,12 @@ jibri:
   ## jibri XMPP user credentials:
   xmpp:
     user: jibri
-    password:
+    password: CHANGEME
 
   ## recorder XMPP user credentials:
   recorder:
     user: recorder
-    password:
+    password: CHANGEME
 
   livenessProbe:
     initialDelaySeconds: 5
@@ -722,7 +722,7 @@ turn:
     externalIP: "CHANGEME"
 
   xmpp:
-    password:
+    password: CHANGEME
 
   ssl:
     ## APITECH : Configuration des certificats TLS pour le serveur TURN.
