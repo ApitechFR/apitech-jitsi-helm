@@ -36,7 +36,7 @@ spec:
               name: mariadb
           volumeMounts:
             - name: data
-              mountPath: /var/lib/mysql/data
+              mountPath: /var/lib/mysql
           resources:
             {{- toYaml .Values.overlay.database.resources | nindent 12 }}
           # readinessProbe:
