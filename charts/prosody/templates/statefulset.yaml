@@ -58,8 +58,10 @@ spec:
           - {{ tpl (toYaml . ) $ | indent 12 | trim }}
           {{- end }}
           {{- end }}
-          {{- if or (.Values.extraEnvs) (.Values.metrics.enabled) (.Values.turn.enabled) }}
+          {{- if or (.Values.extraEnvs) (.Values.metrics.enabled) (.Values.turn.enabled) (.Values.enableAuth) }}
           env:
+          - name: XMPP_MODULES 
+            value: "{{ append (.Values.xmppModules | default (list)) "muc_size" | join "," }}"
           {{- if .Values.enableAuth }}
           - name: ENABLE_AUTH
             {{/*value: "{{ ternary "1" "0" .Values.enableAuth }}"*/}}
