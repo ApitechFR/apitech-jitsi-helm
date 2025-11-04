@@ -10,7 +10,7 @@ icon: https://apitechfr.github.io/apitech-jitsi-helm/jitsi-meet.png
 ## This is the *chart* version.
 #  This version number should be incremented each time you make
 #  changes to the chart and its templates, including the app version.
-version: 1.7.3
+version: 1.7.4
 
 ## This is the *application* version.
 #  Due to the way the chart is split into the "main" one
@@ -27,7 +27,7 @@ dependencies:
   - name: prosody
     condition: prosody.enabled
     repository: "file://charts/prosody"
-    version: 1.7.3
+    version: 1.7.4
 
 ## Chart annotations (for ArtifactHub):
 annotations:
