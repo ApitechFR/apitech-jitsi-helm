@@ -63,7 +63,7 @@ spec:
               {{- end }}
               readOnly: true
           {{- else }}
-          {{ range $path, $_ := .Files.Glob "assets/**" }}
+            {{ range $path, $_ := .Files.Glob "assets/**" }}
             - name: assets
               {{- /* Dans le code de la surcouche, si NODE_ENV est en production il faut monter dans /app/dist/public */}}
               {{- if eq $.Values.overlay.v1.envValues.NODE_ENV "development" }}
@@ -73,7 +73,11 @@ spec:
               {{- end }}
               subPath: {{ base $path }}
               readOnly: true
+            {{- end }}
           {{- end }}
+          {{- if .Values.jibri.enabled }}
+            - name: {{ include "jitsi-meet.web.fullname" . }}-replays
+              mountPath: /data/visioreplay
           {{- end }}
           {{- with .Values.overlay.v1.extraVolumeMounts }}
           {{- toYaml . | nindent 10 }}
@@ -107,6 +111,11 @@ spec:
               - key: {{ base $path }}
                 path: {{ base $path }}
             {{- end }}
+        {{- end }}
+        {{- if .Values.jibri.enabled }}
+        - name: {{ include "jitsi-meet.web.fullname" . }}-replays
+          persistentVolumeClaim:
+            claimName: {{ include "jitsi-meet.web.fullname" . }}-replays
         {{- end }}
 
       {{- with .Values.web.nodeSelector }}

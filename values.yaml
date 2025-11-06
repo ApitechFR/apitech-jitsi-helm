@@ -214,9 +214,10 @@ overlay:
     extraVolumeMounts: []
     ## APITECH : Volume partagé pour l'overlay.
     #  Doit être ReadWriteMany pour permettre à tous les pods web d'accéder
-    sharedMeetStorageSize: 1Gi
+    sharedMeet:
+      storageSize: 1Gi
     ## APITECH : Utilisation d'une storageClass single-replica préférable ici, pas de données critiques.
-    sharedMeetStorageClass: "CHANGEME" # ex: longhorn-single-no-retain
+      storageClass: "CHANGEME" # ex: longhorn-single-no-retain
     service:
       type: ClusterIP
       port: 3000
@@ -287,6 +288,15 @@ overlay:
      - secretName: CHANGEME-tls
        hosts:
          - CHANGEME.example.com
+         
+  replays:
+    ## APITECH : Configuration du stockage des replays.
+    #  Doit être ReadWriteMany pour permettre à tous les pods web d'accéder
+    #  ATTENTION: Le PVC ne sera créé que si le Jibri est activé !!
+    storageSize: 5Gi
+    ## APITECH : Utilisation d'une storageClass single-replica préférable ici, pas de données critiques.
+    storageClass: "longhorn-single-no-retain" # ex: longhorn-single-no-retain
+
   database:
     useExternalDatabase: false
     externalDatabase:

@@ -27,6 +27,18 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/jibri/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/jibri/xmpp-secret.yaml") . | sha256sum }}
+        checksum/other-config: {{ include (print $.Template.BasePath "/jibri/configmaps-other.yaml") . | sha256sum }}
+        {{- if .Values.jibri.custom.contInit._10_config }}
+        checksum/cont-init: {{ include (print $.Template.BasePath "/jibri/configmap-cont-inits.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if or 
+          .Values.jibri.custom.defaults._jibri_conf
+          .Values.jibri.custom.defaults._logging_properties
+          .Values.jibri.custom.defaults._autoscaler_sidecar_config
+          .Values.jibri.custom.defaults._xorg_video_dummy_conf
+          }}
+        checksum/defaults: {{ include (print $.Template.BasePath "/jibri/configmap-defaults.yaml") . | sha256sum }}
+        {{- end }}
       {{- range $annotation, $value := mergeOverwrite .Values.global.podAnnotations .Values.jibri.podAnnotations }}
         {{ $annotation }}: {{ $value|quote }}
       {{- end }}
@@ -80,6 +92,11 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /config
+        - name: {{ include "jitsi-meet.web.fullname" . }}-replays
+          mountPath: /data/visioreplay
+        - name: custom-other
+          mountPath: /config/finalize.sh
+          subPath: finalize.sh
         {{- if .Values.jibri.custom.contInit._10_config }}
         - name: custom-cont-inits
           mountPath: /etc/cont-init.d/10-config
@@ -105,21 +122,18 @@ spec:
           mountPath: /defaults/xorg-video-dummy.conf
           subPath: xorg-video-dummy.conf
         {{- end }}
-        {{- if .Values.jibri.custom.other._finalize_sh }}
-        - name: custom-other
-          mountPath: /config/finalize.sh
-          subPath: finalize.sh
-        {{- end }}
         - name: jibri-data
           mountPath: /data
         {{- if .Values.jibri.shm.enabled }}
         - name: dev-shm
           mountPath: /dev/shm
         {{- end }}
-
       volumes:
       - name: config
         emptyDir: {}
+      - name: {{ include "jitsi-meet.web.fullname" . }}-replays
+        persistentVolumeClaim:
+          claimName: {{ include "jitsi-meet.web.fullname" . }}-replays
       - name: custom-cont-inits
         configMap:
           defaultMode: 493

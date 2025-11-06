@@ -9,5 +9,74 @@ data:
     {{- if .Values.jibri.custom.other._finalize_sh }}
       {{- .Values.jibri.custom.other._finalize_sh | nindent 4 }}
     {{- else }}
-    # Not using a custom finalize.sh
+    #!/bin/bash
+    # Using default Apitech finalize script
+
+    {{- if eq .Values.overlay.mode "v1" }}
+    DOMAIN_JITSI="http://{{ include "jitsi-meet.overlay.v1.fullname" . }}:{{ .Values.overlay.v1.service.port }}"
+    URL_END_RECORDING="$DOMAIN_JITSI/api/visioreplay/end_recording"
+    {{- else if eq .Values.overlay.mode "v3" }}
+    DOMAIN_JITSI="http://{{ include "jitsi-meet.overlay.v3.backend.fullname" . }}:{{ .Values.overlay.v3.backend.service.port }}"
+    URL_END_RECORDING="$DOMAIN_JITSI/replays"
+    {{- end }}
+
+    LOG="/config/script/finalize.log"
+    touch $LOG
+    #exec $LOG; exec 2>&1
+
+    mkdir /config/script
+
+    chown jibri:jibri /config/script
+
+    echo "Démarrage script `date`"
+    RECORD_DIRECTORY=$1
+    RECORD_FILE=`ls $RECORD_DIRECTORY/*.mp4`
+    RECORD_FILE_BASENAME=`basename $RECORD_FILE`
+    IFS=_ read -a ARRAY <<< "$RECORD_FILE_BASENAME"
+    NAME=${ARRAY[0]}
+    echo NAME=$NAME
+    echo RECORD_DIRECTORY=$RECORD_DIRECTORY
+    echo param1=$1
+
+    #ROOM_UID=`curl -s -k $DOMAIN_JITSI/api/visioadmin/rooms?name=$NAME`
+
+    UID_GEN=`basename $RECORD_DIRECTORY`
+
+    echo "UID=$UID_GEN"
+
+    if [ "$UID_GEN" == "" ]
+    then
+            echo "UID vide"
+    fi
+
+    curl -s -k -X PUT -H 'Content-Type: application/json' --data '{"uid": '\"$UID_GEN\"', "status": "uploading-rsync", "message": "Utilisateur stop l'\''enregistrement"}' $URL_END_RECORDING/confname/$NAME/end_recording
+
+    mv $RECORD_DIRECTORY/*.mp4 $RECORD_DIRECTORY/$NAME.mp4
+
+    echo Record: $RECORD_DIRECTORY/$NAME.mp4
+
+    mkdir -p /data/visioreplay/$UID_GEN/record
+    cp -ar $RECORD_DIRECTORY/* /data/visioreplay/$UID_GEN/record/
+
+    CODE_RETOUR=$?
+    if [ $CODE_RETOUR -ne 0 ]
+    then
+      echo "Erreur upload rsync - Code retour : $CODE_RETOUR"
+      curl -s -k -X PUT -H 'Content-Type: application/json' --data '{"status": "error-uploading-rsync", "message": "Rsync error - Error code : '$CODE_RETOUR'"}' $URL_END_RECORDING/$UID_GEN
+      curl -s -k -X PUT -H 'Content-Type: application/json' --data '{"status": "error-uploading-rsync", "message": "Rsync error - Error code : '$CODE_RETOUR'"}' $URL_END_RECORDING/$UID_GEN/end_recording
+      while [ 1 ]
+      do
+              echo "Boucle bloquante - récupérer le fichier video manuellement"
+              sleep 1
+      done
+    fi
+
+    echo "Path du fichier copié : /data/visioreplay/$UID_GEN/record/$NAME.mp4"
+    curl -s -k -X PUT -H 'Content-Type: application/json' --data '{"status": "uploaded-rsync", "message": "video disponible", "file_path": "/data/visioreplay/'$UID_GEN'/record/'$NAME'.mp4"}' $URL_END_RECORDING/$UID_GEN/end_recording
+
+    rm -r $RECORD_DIRECTORY
+
+    echo "\nFin de script"
+
+    date
     {{ end }}

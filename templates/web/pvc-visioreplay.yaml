@@ -1,0 +1,15 @@
+{{- if and .Values.overlay.enabled .Values.jibri.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "jitsi-meet.web.fullname" . }}-replays
+  labels:
+    {{- include "jitsi-meet.web.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: "{{ .Values.overlay.replays.storageSize }}"
+  storageClassName: "{{ .Values.overlay.replays.storageClass }}"
+{{- end -}}

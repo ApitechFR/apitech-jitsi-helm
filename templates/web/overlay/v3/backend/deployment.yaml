@@ -46,14 +46,26 @@ spec:
             - secretRef:
                 name: {{ include "jitsi-meet.overlay.database.fullname" . }}-secret
             {{- end }}
-          {{- if .Values.overlay.v3.assetsConfigmap }}
+          {{- if or .Values.overlay.v3.assetsConfigmap .Values.jibri.enabled }}
           volumeMounts:
+            {{- if .Values.overlay.v3.assetsConfigmap }}
             - name: {{ .Values.overlay.v3.assetsConfigmap }}
               {{- /* Dans le code de la surcouche, si NODE_ENV est en production il faut monter dans /app/dist/public */}}
               {{- if eq $.Values.overlay.v3.envValues.NODE_ENV "development" }}
               mountPath: /app/public/pictures/client
               {{- else }}
               mountPath: /app/dist/public/pictures/client
+              {{- end }}
+            {{- end }}
+            {{- if .Values.jibri.enabled }}
+            - name: {{ include "jitsi-meet.web.fullname" . }}-replays
+              mountPath: /data/visioreplay
           {{- end }}
+      {{- if .Values.jibri.enabled }}
+      volumes:
+        - name: {{ include "jitsi-meet.web.fullname" . }}-replays
+          persistentVolumeClaim:
+            claimName: {{ include "jitsi-meet.web.fullname" . }}-replays
+      {{- end }}
 {{- end }}
 {{- end }}

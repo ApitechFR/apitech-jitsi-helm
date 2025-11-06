@@ -10,6 +10,6 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: "{{ .Values.overlay.v1.sharedMeetStorageSize }}"
-  storageClassName: "{{ .Values.overlay.v1.sharedMeetStorageClass }}"
+      storage: "{{ .Values.overlay.v1.sharedMeet.storageSize }}"
+  storageClassName: "{{ .Values.overlay.v1.sharedMeet.storageClass }}"
 {{- end -}}
