@@ -13,28 +13,17 @@
 {{- $fullName := $.fullName -}}
 {{- $svcPort := $.svcPort -}}
 
-{{- $kubeVersion := .Capabilities.KubeVersion.GitVersion -}}
-{{- if semverCompare ">=1.19-0" $kubeVersion -}}
 apiVersion: networking.k8s.io/v1
-{{- else if semverCompare ">=1.14-0" $kubeVersion -}}
-apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
-apiVersion: extensions/v1beta1
-{{- end }}
 kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- if eq .Values.overlay.mode "v1" -}}
+    {{- if eq .Values.overlay.mode "v1" }}
         {{- include "jitsi-meet.overlay.v1.labels" . | nindent 4 }}
-    {{- else if eq .Values.overlay.mode "v3" -}}
+    {{- else if eq .Values.overlay.mode "v3" }}
         {{- include "jitsi-meet.overlay.v3.labels" . | nindent 4 }}
-    {{- end -}}
-  {{- if or .Values.overlay.ingress.annotations (and .Values.overlay.ingress.ingressClassName (semverCompare "<1.19-0" $kubeVersion)) }}
-  annotations:
-    {{- if and .Values.overlay.ingress.ingressClassName (semverCompare "<1.19-0" $kubeVersion) }}
-    kubernetes.io/ingress.class: {{ .Values.overlay.ingress.ingressClassName }}
     {{- end }}
+  annotations:
     nginx.org/websocket-services: {{ $fullName }}
     {{- if eq .Values.overlay.mode "v3" }}
     nginx.org/rewrites: "serviceName={{ include "jitsi-meet.overlay.v3.backend.fullname" . }} rewrite=/"
@@ -42,55 +31,34 @@ metadata:
     {{- with .Values.overlay.ingress.annotations }}
     {{-   toYaml . | nindent 4 }}
     {{- end }}
-  {{- end }}
 spec:
-{{- if and .Values.overlay.ingress.ingressClassName (semverCompare ">=1.19-0" $kubeVersion) }}
   ingressClassName: {{ .Values.overlay.ingress.ingressClassName }}
-{{- end }}
-{{- if .Values.overlay.ingress.tls }}
+{{- if .Values.overlay.ingress.tls.enabled }}
   tls:
-  {{- range .Values.overlay.ingress.tls }}
     - hosts:
-      {{- range .hosts }}
-        - {{ . | quote }}
-      {{- end }}
-      secretName: {{ .secretName }}
-  {{- end }}
+      - {{ .Values.overlay.ingress.host | quote }}
+      secretName: {{ .Values.overlay.ingress.tls.secretName }}
 {{- end }}
   rules:
-  {{- range .Values.overlay.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ .Values.overlay.ingress.host | quote }}
       http:
         paths:
-        {{- range .paths }}
-          - path: {{ . }}
+          - path: /
             pathType: Prefix
             backend:
-            {{ if semverCompare ">=1.19-0" $kubeVersion }}
               service:
                 name: {{ $fullName }}
                 port:
-                  {{ if kindIs "float64" $svcPort }}
+                  {{- if kindIs "float64" $svcPort }}
                   number: {{ $svcPort }}
-                  {{ else }}
+                  {{- else }}
                   name: {{ $svcPort }}
-                  {{ end }}
-            {{ else }}
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
-            {{ end }}
+                  {{- end }}
           - path: /api/
             pathType: Prefix
             backend:
-            {{ if semverCompare ">=1.19-0" $kubeVersion }}
               service:
-                name: {{ include "jitsi-meet.overlay.v3.backend.fullname" $ }}
+                name: {{ include "jitsi-meet.overlay.v3.backend.fullname" . }}
                 port:
-                  number: {{ $.Values.overlay.v3.backend.service.port }}
-            {{ else }}
-              serviceName: {{ include "jitsi-meet.overlay.v3.backend.fullname" $ }}
-              servicePort: {{ $.Values.overlay.v3.backend.service.port }}
-            {{ end }}
-        {{- end }}
-  {{- end }}
+                  number: {{ .Values.overlay.v3.backend.service.port }}
 {{- end }}
