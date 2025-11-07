@@ -7,6 +7,14 @@ metadata:
     {{- include "jitsi-meet.overlay.v1.labels" . | nindent 4 }}
 data:
     JITSI_VERSION: 2.0.{{ .Values.global.jitsiVersion | default .Chart.AppVersion | replace "stable-" "" }}
+    OIDC_REDIRECT_URL: "https://{{ .Values.overlay.ingress.host }}/auth/callback"
+    OIDC_LOGOUT_REDIRECT_URL: "https://{{ .Values.overlay.ingress.host }}/auth/logout"
+    JITSI_DOMAIN: "{{ .Values.web.ingress.host }}"
+    OID_REDIRECT_URI: "https://{{ .Values.overlay.ingress.host }}/auth/callback"
+    OID_LOGOUT_URI: "https://{{ .Values.overlay.ingress.host }}/auth/logout"
+    JITSI_DOMAIN: "{{ .Values.overlay.ingress.host }}"
+    OID_REDIRECT_URI: "https://{{ .Values.overlay.ingress.host }}/auth/callback"
+    OID_LOGOUT_URI: "https://{{ .Values.overlay.ingress.host }}/auth/logout"
     JWT_APP_ID: {{ .Values.jwt.appId | quote }}
     JWT_SECRET: {{ .Values.jwt.secret | quote }}
     TOPBAR_LOGO: "/pictures/client/logo.png"
