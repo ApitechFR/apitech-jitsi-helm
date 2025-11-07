@@ -129,14 +129,18 @@ web:
       acme.cert-manager.io/http01-edit-in-place: "true"
       ## APITECH : Ici, bien spécifier le cluster-issuer
       cert-manager.io/cluster-issuer: CHANGEME
-    hosts:
-    - host: CHANGEME.example.com
-      paths:
-        - /
-    tls:
-     - secretName: CHANGEME-tls
-       hosts:
-         - CHANGEME.example.com
+    host: CHANGEME.example.com
+    tls: 
+      enabled: true
+      secretName: CHANGEME-tls
+    # hosts:
+    # - host: CHANGEME.example.com
+    #   paths:
+    #     - /
+    # tls:
+    #  - secretName: CHANGEME-tls
+    #    hosts:
+    #      - CHANGEME.example.com
 
   # Useful for ingresses that don't support http-to-https redirect by themself, (namely: GKE),
   httpRedirect: false
@@ -280,14 +284,18 @@ overlay:
       acme.cert-manager.io/http01-edit-in-place: "true"
     ## APITECH : Ici, bien spécifier le cluster-issuer
       cert-manager.io/cluster-issuer: letsencrypt-prod
-    hosts:
-    - host: CHANGEME.example.com
-      paths:
-        - /
+    host: CHANGEME.example.com
     tls:
-     - secretName: CHANGEME-tls
-       hosts:
-         - CHANGEME.example.com
+      enabled: true
+      secretName: CHANGEME-tls
+    # hosts:
+    # - host: CHANGEME.example.com
+    #   paths:
+    #     - /
+    # tls:
+    #  - secretName: CHANGEME-tls
+    #    hosts:
+    #      - CHANGEME.example.com
          
   replays:
     ## APITECH : Configuration du stockage des replays.
@@ -853,11 +861,15 @@ dashboard:
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-prod
         acme.cert-manager.io/http01-edit-in-place: "true"
-      hosts:
-        - host: CHANGEME.example.com
-          paths:
-            - /
+      host: CHANGEME.example.com
       tls:
-        - secretName: CHANGEME-tls
-          hosts:
-            - CHANGEME.example.com
+        enabled: true
+        secretName: CHANGEME-tls
+      # hosts:
+      #   - host: CHANGEME.example.com
+      #     paths:
+      #       - /
+      # tls:
+      #   - secretName: CHANGEME-tls
+      #     hosts:
+      #       - CHANGEME.example.com
