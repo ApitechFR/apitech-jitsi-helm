@@ -13,6 +13,19 @@
 {{- $fullName := $.fullName -}}
 {{- $svcPort := $.svcPort -}}
 
+{{- $websocketServices := $.fullName -}}
+{{- if and .Values.excalidraw.backend.enabled (not .Values.excalidraw.useExternalExcalidraw) .Values.excalidraw.frontend.exposeViaIngress -}}
+{{- $websocketServices = printf "%s,%s" $fullName (include "jitsi-meet.excalidraw.backend.fullname" .)  -}}
+{{- end -}}
+
+{{- $rewrites := "" -}}
+{{- if eq .Values.overlay.mode "v3" -}}
+{{- $rewrites = printf "serviceName=%s rewrite=/" (include "jitsi-meet.overlay.v3.backend.fullname" .) -}}
+{{- end -}}
+{{- if and .Values.excalidraw.backend.enabled (not .Values.excalidraw.useExternalExcalidraw) .Values.excalidraw.frontend.exposeViaIngress -}}
+{{- $rewrites = printf "%s;serviceName=%s rewrite=/" $rewrites (include "jitsi-meet.excalidraw.backend.fullname" .) -}}
+{{- end -}}
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -24,9 +37,9 @@ metadata:
         {{- include "jitsi-meet.overlay.v3.labels" . | nindent 4 }}
     {{- end }}
   annotations:
-    nginx.org/websocket-services: {{ $fullName }}
-    {{- if eq .Values.overlay.mode "v3" }}
-    nginx.org/rewrites: "serviceName={{ include "jitsi-meet.overlay.v3.backend.fullname" . }} rewrite=/"
+    nginx.org/websocket-services: {{ $websocketServices }}
+    {{- if ne $rewrites "" }}
+    nginx.org/rewrites: {{ $rewrites }}
     {{- end }}
     {{- with .Values.overlay.ingress.annotations }}
     {{-   toYaml . | nindent 4 }}
@@ -61,4 +74,13 @@ spec:
                 name: {{ include "jitsi-meet.overlay.v3.backend.fullname" . }}
                 port:
                   number: {{ .Values.overlay.v3.backend.service.port }}
+          {{- if and .Values.excalidraw.backend.enabled (not .Values.excalidraw.useExternalExcalidraw) .Values.excalidraw.frontend.exposeViaIngress }}
+          - path: {{ .Values.excalidraw.frontend.ingressPath | default "/excalidraw/" }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "jitsi-meet.excalidraw.backend.fullname" . }}
+                port:
+                  number: 80
+          {{- end }}
 {{- end }}

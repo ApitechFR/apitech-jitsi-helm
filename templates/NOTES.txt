@@ -19,3 +19,17 @@
   echo "Visit http://127.0.0.1:8080 to use your application"
   kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:80
 {{- end }}
+
+{{/*
+{{- if and .Values.excalidraw.frontend.enabled .Values.excalidraw.useExternalExcalidraw }}
+AVERTISSEMENT: Avoir excalidraw.frontend.enabled à true et excalidraw.useExternalExcalidraw à true n'est pas compatible. L'Excalidraw externe sera utilisé.
+{{- end }}
+*/}}
+
+{{- if .Values.exalidraw.frontend.enabled }}
+AVERTISSEMENT : Le frontend Excalidraw n'est pas encore fonctionnel. Merci de définir excalidraw.frontend.enabled à false.
+{{- end }}
+
+{{- if and .Values.excalidraw.backend.enabled .Values.excalidraw.useExternalExcalidraw }}
+AVERTISSEMENT: Avoir excalidraw.backend.enabled à true et excalidraw.useExternalExcalidraw à true n'est pas compatible. L'Excalidraw externe sera utilisé.
+{{- end }}

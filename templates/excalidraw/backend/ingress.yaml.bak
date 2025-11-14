@@ -1,0 +1,45 @@
+{{- if and 
+    .Values.excalidraw.backend.enabled 
+    (not .Values.excalidraw.useExternalExcalidraw)
+    .Values.excalidraw.backend.ingress.enabled 
+-}}
+
+{{- $fullName := "" -}}
+{{- $svcPort := 80 -}}
+
+{{- $_ := set $ "fullName" (include "jitsi-meet.excalidraw.backend.fullname" .) -}}
+
+{{- $fullName := $.fullName -}}
+{{- $svcPort := $.svcPort -}}
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "jitsi-meet.excalidraw.backend.labels" . | nindent 4 }}
+  annotations:
+    nginx.org/websocket-services: {{ $fullName }}
+    {{- with .Values.excalidraw.backend.ingress.annotations }}
+    {{-   toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.excalidraw.backend.ingress.ingressClassName }}
+{{- if .Values.excalidraw.backend.ingress.tls.enabled }}
+  tls:
+    - hosts:
+      - {{ .Values.excalidraw.backend.ingress.host | quote }}
+      secretName: {{ .Values.excalidraw.backend.ingress.tls.secretName }}
+{{- end }}
+  rules:
+    - host: {{ .Values.excalidraw.backend.ingress.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $svcPort }}
+{{- end }}

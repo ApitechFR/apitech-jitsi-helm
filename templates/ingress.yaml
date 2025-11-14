@@ -9,6 +9,18 @@
 {{- $fullName := $.fullName -}}
 {{- $svcPort := $.svcPort -}}
 
+
+{{- $websocketServices := $.fullName -}}
+{{- if and .Values.excalidraw.backend.enabled (not .Values.excalidraw.useExternalExcalidraw) .Values.excalidraw.frontend.exposeViaIngress (not .Values.overlay.enabled) -}}
+{{- $websocketServices = printf "%s,%s" $fullName (include "jitsi-meet.excalidraw.backend.fullname" .)  -}}
+{{- end -}}
+
+{{- $rewrites := "" -}}
+{{- if and .Values.excalidraw.backend.enabled (not .Values.excalidraw.useExternalExcalidraw) .Values.excalidraw.frontend.exposeViaIngress (not .Values.overlay.enabled) -}}
+{{- $rewrites = printf "%s;serviceName=%s rewrite=/" $rewrites (include "jitsi-meet.excalidraw.backend.fullname" .) -}}
+{{- end -}}
+
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -16,7 +28,10 @@ metadata:
   labels:
     {{- include "jitsi-meet.web.labels" . | nindent 4 }}
   annotations:
-    nginx.org/websocket-services: {{ $fullName }}
+    nginx.org/websocket-services: {{ $websocketServices }}
+    {{- if ne $rewrites "" }}
+    nginx.org/rewrites: {{ $rewrites }}
+    {{- end }}
     {{- with .Values.web.ingress.annotations }}
     {{-   toYaml . | nindent 4 }}
     {{- end }}
@@ -43,4 +58,13 @@ spec:
                   {{- else }}
                   name: {{ $svcPort }}
                   {{- end }}
+          {{- if and .Values.excalidraw.backend.enabled (not .Values.excalidraw.useExternalExcalidraw) .Values.excalidraw.frontend.exposeViaIngress (not .Values.overlay.enabled) }}
+          - path: {{ .Values.excalidraw.frontend.ingressPath | default "/excalidraw/" }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "jitsi-meet.excalidraw.backend.fullname" . }}
+                port:
+                  number: 80
+          {{- end }}
 {{- end }}

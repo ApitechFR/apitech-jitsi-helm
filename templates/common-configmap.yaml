@@ -53,3 +53,11 @@ data:
   DEPLOYMENTINFO_REGION: "all"
   DEPLOYMENTINFO_USERREGION: "all"
   {{- end }}
+  {{- if .Values.excalidraw.enabled }}
+  WHITEBOARD_ENABLED: "true"
+  {{- if .Values.excalidraw.useExternalExcalidraw }}
+  WHITEBOARD_COLLAB_SERVER_PUBLIC_URL: "{{ .Values.excalidraw.externalExcalidrawURL }}"
+  {{- else }}
+  WHITEBOARD_COLLAB_SERVER_URL_BASE: "http://{{ include "jitsi-meet.excalidraw.backend.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:80"
+  {{- end }}
+  {{- end }}

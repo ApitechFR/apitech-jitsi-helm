@@ -1,0 +1,27 @@
+{{- if and .Values.excalidraw.backend.enabled (not .Values.excalidraw.useExternalExcalidraw) }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jitsi-meet.excalidraw.backend.fullname" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "jitsi-meet.excalidraw.backend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "jitsi-meet.excalidraw.backend.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}    
+      containers:
+      - name: excalidraw
+        securityContext:
+          {{- toYaml .Values.excalidraw.backend.securityContext | nindent 12 }}
+        image: "{{ .Values.excalidraw.backend.image.repository }}:{{ .Values.excalidraw.backend.image.tag }}"
+        resources:
+          {{- toYaml .Values.excalidraw.backend.resources | nindent 12 }}
+{{- end }}

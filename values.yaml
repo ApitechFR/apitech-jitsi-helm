@@ -202,8 +202,30 @@ web:
 
   affinity: {}
 
-  ## APITECH : Paramètres de l'overlay Joona
-  #  Image docker à build à partir du dépôt.
+## APITECH : Configuration d'Excalidraw
+excalidraw:
+  enabled: false
+  useExternalExcalidraw: false
+  externalExcalidrawURL: "https://CHANGEME.example.com"
+  ## APITECH : Frontend pas activé pour le moment !!
+  frontend:
+    enabled: false
+    image:
+      repository: ""
+    service:
+      type: ClusterIP
+      port: 80
+    ## APITECH : Exposition de l'Excalidraw via l'ingress de l'overlay (ou de Jitsi Web si l'overlay est désactivé).
+    exposeViaIngress: false
+    ingressPath: "/excalidraw/"
+  backend:
+    enabled: true
+    image:
+      repository: jitsi/excalidraw-backend
+      tag: 21
+
+## APITECH : Paramètres de l'overlay Joona
+#  Image docker à build à partir du dépôt.
 overlay:
   enabled: true
   ## APITECH : Version de l'overlay Joona.

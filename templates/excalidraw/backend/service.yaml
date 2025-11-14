@@ -1,0 +1,14 @@
+{{- if and .Values.excalidraw.backend.enabled (not .Values.excalidraw.useExternalExcalidraw) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "jitsi-meet.excalidraw.backend.fullname" . }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    name: http
+    targetPort: 80
+  selector:
+    {{- include "jitsi-meet.excalidraw.backend.selectorLabels" . | nindent 4 }}
+{{- end }}
