@@ -26,10 +26,10 @@ AVERTISSEMENT: Avoir excalidraw.frontend.enabled à true et excalidraw.useExtern
 {{- end }}
 */}}
 
-{{- if .Values.exalidraw.frontend.enabled }}
+{{- if .Values.excalidraw.frontend.enabled }}
 AVERTISSEMENT : Le frontend Excalidraw n'est pas encore fonctionnel. Merci de définir excalidraw.frontend.enabled à false.
 {{- end }}
 
 {{- if and .Values.excalidraw.backend.enabled .Values.excalidraw.useExternalExcalidraw }}
-AVERTISSEMENT: Avoir excalidraw.backend.enabled à true et excalidraw.useExternalExcalidraw à true n'est pas compatible. L'Excalidraw externe sera utilisé.
+AVERTISSEMENT : Avoir excalidraw.backend.enabled à true et excalidraw.useExternalExcalidraw à true n'est pas compatible. L'Excalidraw externe sera utilisé.
 {{- end }}
