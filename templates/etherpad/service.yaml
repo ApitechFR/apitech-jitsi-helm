@@ -1,0 +1,14 @@
+{{- if and .Values.etherpad.enabled (not .Values.etherpad.useExternalExcalidraw) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "jitsi-meet.etherpad.fullname" . }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: 9001
+    name: http
+    targetPort: 9001
+  selector:
+    {{- include "jitsi-meet.etherpad.selectorLabels" . | nindent 4 }}
+{{- end }}

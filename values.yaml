@@ -133,14 +133,6 @@ web:
     tls: 
       enabled: true
       secretName: CHANGEME-tls
-    # hosts:
-    # - host: CHANGEME.example.com
-    #   paths:
-    #     - /
-    # tls:
-    #  - secretName: CHANGEME-tls
-    #    hosts:
-    #      - CHANGEME.example.com
 
   # Useful for ingresses that don't support http-to-https redirect by themself, (namely: GKE),
   httpRedirect: false
@@ -224,6 +216,16 @@ excalidraw:
       repository: jitsi/excalidraw-backend
       tag: 21
 
+## APITECH : Configuration d'Etherpad
+etherpad:
+  enabled: true
+  useExternalEtherpad: false
+  ### IMPORTANT : Cette URL DOIT se terminer par "/p/"
+  externalEtherpadURL: "https://CHANGEME.example.com/p/"
+  image:
+    repository: etherpad/etherpad
+    tag: 2.0.3
+
 ## APITECH : Paramètres de l'overlay Joona
 #  Image docker à build à partir du dépôt.
 overlay:
@@ -239,11 +241,11 @@ overlay:
       pullPolicy: IfNotPresent
     extraVolumeMounts: []
     ## APITECH : Volume partagé pour l'overlay.
-    #  Doit être ReadWriteMany pour permettre à tous les pods web d'accéder
     sharedMeet:
-      storageSize: 1Gi
-    ## APITECH : Utilisation d'une storageClass single-replica préférable ici, pas de données critiques.
-      storageClass: "CHANGEME" # ex: longhorn-single-no-retain
+      storageSize: 500Mi
+      ## APITECH : Utilisation d'une storageClass sans rétention de données préférable ici, pas de données critiques.
+      storageClass: "CHANGEME" # ex: longhorn
+      
     service:
       type: ClusterIP
       port: 3000
@@ -310,15 +312,7 @@ overlay:
     tls:
       enabled: true
       secretName: CHANGEME-tls
-    # hosts:
-    # - host: CHANGEME.example.com
-    #   paths:
-    #     - /
-    # tls:
-    #  - secretName: CHANGEME-tls
-    #    hosts:
-    #      - CHANGEME.example.com
-         
+
   replays:
     ## APITECH : Configuration du stockage des replays.
     #  Doit être ReadWriteMany pour permettre à tous les pods web d'accéder
@@ -328,6 +322,8 @@ overlay:
     storageClass: "longhorn-single-no-retain" # ex: longhorn-single-no-retain
 
   database:
+    ## APITECH : Configuration de la base de données de l'overlay.
+    #  Paramètres communs à la v1 et la v3.
     useExternalDatabase: false
     externalDatabase:
       host: ""
@@ -341,8 +337,7 @@ overlay:
       pullPolicy: IfNotPresent
 
     storage:
-      ## APITECH : Le stockage doit être ReadWriteMany pour permettre les backups.
-      accessMode: "ReadWriteMany"
+      accessMode: "ReadWriteOnce"
       size: 5Gi
       storageClass: "longhorn"
 
@@ -814,8 +809,7 @@ prosody:
   persistence:
     enabled: true
     size: 500Mi
-    ## APITECH : Le stockage doit être ReadWriteMany pour permettre les backups.
-    accessMode: "ReadWriteMany"
+    accessMode: "ReadWriteOnce"
     storageClass: "longhorn-single-no-retain"
   ## APITECH : Désactivation du module "end_conference".
   #  À laisser désactivé sauf contre-indication.
@@ -860,10 +854,10 @@ dashboard:
 
   prometheus:
     retention: "7d"
-    storageClassName: CHANGEME
+    storageClassName: "CHANGEME"
     storage:
-      accessMode: "ReadWriteMany"
-      size: CHANGEME
+      accessMode: "ReadWriteOnce"
+      size: "2500Mi"
 
   grafana:
     enabled: true
@@ -874,6 +868,7 @@ dashboard:
 
     storage:
       size: 5Gi
+      ## APITECH : ReadWriteMany nécessaire pour le Grafana dans ce cas.
       accessMode: ReadWriteMany
       storageClassName: CHANGEME
 
@@ -887,11 +882,3 @@ dashboard:
       tls:
         enabled: true
         secretName: CHANGEME-tls
-      # hosts:
-      #   - host: CHANGEME.example.com
-      #     paths:
-      #       - /
-      # tls:
-      #   - secretName: CHANGEME-tls
-      #     hosts:
-      #       - CHANGEME.example.com

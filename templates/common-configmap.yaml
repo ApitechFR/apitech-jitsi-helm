@@ -61,3 +61,9 @@ data:
   WHITEBOARD_COLLAB_SERVER_URL_BASE: "http://{{ include "jitsi-meet.excalidraw.backend.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:80"
   {{- end }}
   {{- end }}
+
+  {{- if and .Values.etherpad.enabled .Values.etherpad.useExternalEtherpad }}
+  ETHERPAD_PUBLIC_URL: "{{ .Values.etherpad.externalEtherpadURL }}"
+  {{- else if and .Values.etherpad.enabled (not .Values.etherpad.useExternalEtherpad) }}
+  ETHERPAD_URL_BASE: "http://{{ include "jitsi-meet.etherpad.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:9001"
+  {{- end }}

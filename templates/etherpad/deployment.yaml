@@ -1,0 +1,34 @@
+{{- if and .Values.etherpad.enabled (not .Values.etherpad.useExternalExcalidraw) }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jitsi-meet.etherpad.fullname" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "jitsi-meet.etherpad.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "jitsi-meet.etherpad.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}    
+      containers:
+      - name: etherpad
+        securityContext:
+          {{- toYaml .Values.etherpad.securityContext | nindent 12 }}
+        image: "{{ .Values.etherpad.image.repository }}:{{ .Values.etherpad.image.tag }}"
+        resources:
+          {{- toYaml .Values.etherpad.resources | nindent 12 }}
+        envFrom:
+        - configMapRef:
+            name: {{ include "jitsi-meet.etherpad.fullname" . }}-config
+      volumes:
+        - name: {{ include "jitsi-meet.etherpad.fullname" . }}-config
+          configMap:
+            name: {{ include "jitsi-meet.etherpad.fullname" . }}-config
+{{- end }}

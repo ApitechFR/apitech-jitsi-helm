@@ -1,0 +1,14 @@
+{{- if .Values.etherpad.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "jitsi-meet.etherpad.fullname" . }}-config
+  labels:
+    {{- include "jitsi-meet.labels" . | nindent 4 }}
+data:
+  TITLE: {{ .Values.etherpad.title | default "Jitsi Meet Etherpad" | quote }}
+  DEFAULT_PAD_TEXT: {{ .Values.etherpad.defaultPadText | default "Les notes depuis Jitsi sont automatiquement supprimées après 1h d'inactivité, pensez à sauvegarder ou exporter votre document avant de quitter la conférence." | quote }}
+  SKIN_NAME: {{ .Values.etherpad.skinName | default "colibris" | quote }} 
+  SKIN_VARIANTS: {{ .Values.etherpad.skinVariants | default "super-light-toolbar super-light-editor light-background full-width-edit" | quote }}
+  SUPPRESS_ERRORS_IN_PAD_TEXT: {{ .Values.etherpad.suppressErrorsInPadText | default "true" | quote }}
+{{- end }}
