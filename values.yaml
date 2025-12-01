@@ -34,6 +34,13 @@ authConfig: &authConfig
   jwt:
     appId: "app_id_jwt"
     secret: "secret_jwt"
+  uvs:
+    logLevel: info
+    homeserverURL: "https://CHANGEME.synapse.example.com"
+    image: 
+      repository: "matrixdotorg/matrix-user-verification-service"
+      tag: "branch-master"
+    issuer: "CHANGEME.jitsi.example.com"
   enableGuests: true
 
 <<: *authConfig
@@ -123,9 +130,6 @@ web:
       ## APITECH : Annotations génriques, ne devraient pas être modifiées
       nginx.org/proxy-read-timeout: "3600" # Nécessaire pour les WebSockets
       nginx.org/proxy-send-timeout: "3600" # Nécessaire pour les WebSockets
-      nginx.org/server-snippet: |
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "Upgrade";
       acme.cert-manager.io/http01-edit-in-place: "true"
       ## APITECH : Ici, bien spécifier le cluster-issuer
       cert-manager.io/cluster-issuer: CHANGEME
