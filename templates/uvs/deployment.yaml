@@ -1,0 +1,34 @@
+{{- if eq .Values.authType "hybrid_matrix_token" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jitsi-meet.uvs.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.uvs.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.uvs.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "jitsi-meet.uvs.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "jitsi-meet.uvs.selectorLabels" . | nindent 8 }}
+      annotations:
+        si.jit.meet/hash-secret: "{{ toYaml .Values.secretEnvs | sha256sum | trunc 32 }}"
+    spec:
+      containers:
+        - name: uvs
+          image: "{{ .Values.uvs.image.repository }}:{{ .Values.uvs.image.tag }}"
+          imagePullPolicy: {{ .Values.uvs.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: {{ include "jitsi-meet.uvs.fullname" . }}-secret
+          {{- with .Values.uvs.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}

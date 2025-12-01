@@ -1,0 +1,19 @@
+{{- if eq .Values.authType "hybrid_matrix_token" }}
+apiVersion: v1
+kind: Service
+metadata:
+  {{/* 
+    J'ai pas utilisé le fullname exceptionnellement ici parce que sinon c'est un enfer dans Prosody
+    Si vous voulez le modifier, pensez à mettre à jour les autres références à ce service dans charts/prosody/templates/statefulset.yaml
+    Sinon vous pouvez aussi le laisser tel quel, c'est pas super uniformisé mais ça fonctionne comme il faut
+  */}}
+  name: {{ .Release.Name }}-uvs
+  labels:
+    {{- include "jitsi-meet.uvs.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "jitsi-meet.uvs.selectorLabels" . | nindent 4 }}
+  ports:
+    - port: {{ .Values.uvs.port | default 8080 }}
+      protocol: TCP
+{{- end }}

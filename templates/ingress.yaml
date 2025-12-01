@@ -35,6 +35,16 @@ metadata:
     {{- with .Values.web.ingress.annotations }}
     {{-   toYaml . | nindent 4 }}
     {{- end }}
+    nginx.org/server-snippets: |
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "Upgrade";
+      {{- if eq .Values.authType "hybrid_matrix_token" }}
+      location /.well-known/element/jitsi {
+        add_header Content-Type "application/json";
+        add_header Access-Control-Allow-Origin '*';
+        return 200 '{"auth": "openidtoken-jwt"}';
+      }
+      {{- end }}
 spec:
   ingressClassName: {{ .Values.web.ingress.ingressClassName }}
 {{- if .Values.web.ingress.tls.enabled }}

@@ -11,3 +11,11 @@ data:
     {{- else }}
     # Using prosody /etc/cont-init.d/10-config from container image
     {{ end }}
+  {{- if and (eq .Values.authType "hybrid_matrix_token") (.Values.uvs.disableMembershipVerification | default true) }}
+  12-config-uvs: |
+    #!/usr/bin/with-contenv bash
+
+    # APITECH : Configuration additionnelle pour l'UVS
+    echo "-- Configuring prosody for UVS ---"
+    sed -i '/^[[:space:]]*authentication[[:space:]]*=[[:space:]]*"hybrid_matrix_token"$/a\    uvs_disable_membership_verification = true' /config/conf.d/jitsi-meet.cfg.lua
+  {{- end }}
