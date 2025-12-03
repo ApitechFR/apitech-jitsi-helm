@@ -63,6 +63,16 @@ spec:
           - name: XMPP_MODULES 
             value: "{{ append (.Values.xmppModules | default (list)) "muc_size" | join "," }}"
           {{- if .Values.enableAuth }}
+          {{- if eq .Values.authType "hybrid_matrix_token" }}
+          - name: MATRIX_UVS_URL
+            value: "http://{{ printf "%s-%s" .Release.Name "uvs" }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.uvs.port | default "8080" }}"
+          - name: MATRIX_UVS_ISSUER
+            value: "{{ .Values.uvs.issuer }}"
+          {{- if .Values.uvs.accessToken }}
+          - name: MATRIX_UVS_ACCESS_TOKEN
+            value: "{{ .Values.uvs.accessToken }}"
+          {{- end }}
+          {{- end }}
           - name: ENABLE_AUTH
             {{/*value: "{{ ternary "1" "0" .Values.enableAuth }}"*/}}
             value: "{{ .Values.enableAuth }}"
@@ -125,6 +135,11 @@ spec:
             mountPath: /etc/cont-init.d/10-config
             subPath: 10-config
           {{- end }}
+          {{- if and (eq .Values.authType "hybrid_matrix_token") (.Values.uvs.disableMembershipVerification | default true) }}
+          - name: custom-cont-inits
+            mountPath: /etc/cont-init.d/12-config-uvs
+            subPath: 12-config-uvs
+          {{- end }}
           {{- if .Values.custom.defaults._prosody_cfg_lua }}
           - name: custom-defaults
             mountPath: /defaults/prosody.cfg.lua
@@ -168,6 +183,8 @@ spec:
           items:
             - key: 10-config
               path: 10-config
+            - key: 12-config-uvs
+              path: 12-config-uvs
       - name: custom-defaults
         configMap:
           name: {{ include "prosody.fullname" . }}-defaults
