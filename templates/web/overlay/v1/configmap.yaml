@@ -30,6 +30,9 @@ data:
     MARIADB_DB: {{ .Values.overlay.database.auth.database }}
     {{- end }}
     MARIADB_RATING_TABLE: rate
+    {{- if .Values.global.webinar.enabled }}
+    WEBINAR_ENABLED: "true"
+    {{- end }}
   {{- range $key, $value := .Values.overlay.v1.envValues }}
     {{ $key }}: {{ $value | quote }}
   {{- end }}

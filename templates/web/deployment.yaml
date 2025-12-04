@@ -27,6 +27,7 @@ spec:
         {{- end }}
                 {{- if or .Values.web.custom.configs._custom_config_js 
                   .Values.web.custom.configs._custom_interface_config_js 
+                  .Values.web.custom.configs._custom_meet_conf
                   .Values.web.custom.defaults._default 
                   .Values.web.custom.defaults._ffdhe2048_txt 
                   .Values.web.custom.defaults._interface_config_js 
@@ -36,6 +37,7 @@ spec:
                   .Values.web.custom.defaults._ssl_conf 
                   .Values.web.custom.defaults._system_config_js 
                   .Values.jibri.recording
+                  .Values.global.webinar.enabled
         }}
         checksum/conffiles: {{ include (print $.Template.BasePath "/web/configmap-conffiles.yaml") . | sha256sum }}
         {{- end }}
@@ -91,7 +93,7 @@ spec:
               mountPath: /etc/cont-init.d/10-config
               subPath: 10-config
             {{- end }}
-            {{- if or .Values.web.custom.configs._custom_config_js .Values.jibri.recording }}
+            {{- if or .Values.web.custom.configs._custom_config_js .Values.jibri.recording .Values.global.webinar.enabled }}
             - name: custom-conffiles
               mountPath: /config/custom-config.js
               subPath: custom-config.js
@@ -101,7 +103,7 @@ spec:
               mountPath: /config/custom-interface_config.js
               subPath: custom-interface_config.js
             {{- end }}
-            {{- if .Values.web.custom.defaults._default }}
+            {{- if or .Values.web.custom.defaults._default .Values.global.webinar.enabled }}
             - name: custom-conffiles
               mountPath: /defaults/default
               subPath: default
@@ -116,7 +118,7 @@ spec:
               mountPath: /defaults/interface_config.js
               subPath: interface_config.js
             {{- end }}
-            {{- if .Values.web.custom.defaults._meet_conf }}
+            {{- if or .Values.web.custom.defaults._meet_conf .Values.global.webinar.enabled }}
             - name: custom-conffiles
               mountPath: /defaults/meet.conf
               subPath: meet.conf

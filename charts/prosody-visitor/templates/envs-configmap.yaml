@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "prosody-visitor.fullname" . }}
+  labels:
+    {{- include "prosody-visitor.labels" . | nindent 4 }}
+data:
+  ENABLE_END_CONFERENCE: "{{ .Values.enableEndConference | default false }}"
+  PROSODY_MODE: "visitors"
+  XMPP_SERVER: '{{ include "prosody-visitor.xmpp.server" . }}'
+  {{- range $key, $value := .Values.env }}
+  {{- if not (kindIs "invalid" $value) }}
+  {{ $key }}: {{ tpl $value $ | quote }}
+  {{- end }}
+  {{- end }}

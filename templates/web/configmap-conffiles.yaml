@@ -30,6 +30,9 @@ data:
       consentLearnMoreLink: '{{ .Values.web.recordings.consentLearnMoreLink }}',
     };
   {{- end }}
+  {{- if .Values.global.webinar.enabled }}
+    // config['conferenceRequestUrl'] = 'https://{{ .Values.web.ingress.host }}/' + subdir + 'conference-request/v0';
+  {{- end }}
   custom-interface_config.js: |
   {{- if .Values.web.custom.configs._custom_interface_config_js }}
     {{- .Values.web.custom.configs._custom_interface_config_js | nindent 4 }}
@@ -39,6 +42,46 @@ data:
   default: |
   {{- if .Values.web.custom.defaults._default }}
     {{- .Values.web.custom.defaults._default | nindent 4 }}
+  {{- else if .Values.global.webinar.enabled }}
+    upstream prosody {
+        zone upstreams 64K;
+        server {{ include "jitsi-meet.prosody.fullname" . }}:5280;
+        keepalive 2;
+    }
+
+    {{- range $i := until (int .Values.global.webinar.visitorProsodyCount) }}
+    upstream v{{ $i }} {
+        zone upstreams 64K;
+        server {{ printf "%s-%d" (include "jitsi-meet.prosody-visitor.fullname" $) $i }}:5280;
+        keepalive 2;
+    }
+    {{- end }}
+
+    map $arg_vnode $prosody_node {
+        default prosody;
+        {{- range $i := until (int .Values.global.webinar.visitorProsodyCount) }}
+        {{ printf "v%d v%d" $i $i }};
+        {{- end }}
+    }
+    server {
+            listen 80 default_server;
+
+
+            listen [::]:80 default_server;
+        
+            include /config/nginx/meet.conf;
+            
+            location ~ ^(?:/([^/?&:'"]+))?/conference-request/v([0-9]+)(/.*)?$ {
+              # strip optional tenant prefix and proxy to prosody
+              rewrite ^/(?:[^/?&:'"]+)?/conference-request/v([0-9]+)(/.*)?$ /conference-request/v$1$2 break;
+              proxy_pass http://{{ include "jitsi-meet.prosody.fullname" . }}:8888/conference-request/v$1$2;
+              add_header "Cache-Control" "no-cache, no-store";
+              add_header 'Access-Control-Allow-Origin' '*';
+              add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Content-Type';
+            }
+
+    }
   {{- else }}
   # Using web /defaults/default from container image
   {{ end }}
@@ -53,12 +96,6 @@ data:
     {{- .Values.web.custom.defaults._interface_config_js | nindent 4 }}
   {{- else }}
   # Using web /defaults/interface_config.js from container image
-  {{ end }}
-  meet.conf: |
-  {{- if .Values.web.custom.defaults._meet_conf }}
-    {{- .Values.web.custom.defaults._meet_conf | nindent 4 }}
-  {{- else }}
-  # Using web /defaults/meet.conf from container image
   {{ end }}
   nginx.conf: |
   {{- if .Values.web.custom.defaults._nginx_conf }}
@@ -83,4 +120,255 @@ data:
     {{- .Values.web.custom.defaults._system_config_js | nindent 4 }}
   {{- else }}
   # Using web /defaults/system-config.js from container image
+  {{ end }}
+  meet.conf: |
+  {{- if .Values.web.custom.defaults._meet_conf }}
+    {{- .Values.web.custom.defaults._meet_conf | nindent 4 }}
+  {{- else if .Values.global.webinar.enabled }}
+  {{`
+    {{ $ENABLE_COLIBRI_WEBSOCKET := .Env.ENABLE_COLIBRI_WEBSOCKET | default "0" | toBool }}
+    {{ $COLIBRI_WEBSOCKET_PORT := .Env.COLIBRI_WEBSOCKET_PORT | default "9090" }}
+    {{ $COLIBRI_WEBSOCKET_REGEX := .Env.COLIBRI_WEBSOCKET_REGEX | default "jvb" }}
+    {{ $ENABLE_JAAS_COMPONENTS := .Env.ENABLE_JAAS_COMPONENTS | default "0" | toBool }}
+    {{ $ENABLE_LOAD_TEST_CLIENT := .Env.ENABLE_LOAD_TEST_CLIENT | default "0" | toBool }}
+    {{ $ENABLE_OCTO := .Env.ENABLE_OCTO | default "0" | toBool -}}
+    {{ $ENABLE_XMPP_WEBSOCKET := .Env.ENABLE_XMPP_WEBSOCKET | default "1" | toBool }}
+    {{ $ENABLE_SUBDOMAINS := .Env.ENABLE_SUBDOMAINS | default "true" | toBool -}}
+    {{ $XMPP_DOMAIN := .Env.XMPP_DOMAIN | default "meet.jitsi" -}}
+    {{ $XMPP_BOSH_URL_BASE := .Env.XMPP_BOSH_URL_BASE | default "http://xmpp.meet.jitsi:5280" -}}
+    {{ $CORS_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN := .Env.CORS_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN | default "*" }}
+
+    server_name _;
+
+    charset utf8;
+
+    client_max_body_size 0;
+
+    root /usr/share/jitsi-meet;
+
+    # ssi on with javascript for multidomain variables in config.js
+    ssi on;
+    ssi_types application/x-javascript application/javascript;
+
+    index index.html index.htm;
+    error_page 404 /static/404.html;
+
+    # Security headers
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+
+    set $prefix "";
+
+    {{ if .Env.DEPLOYMENTINFO_SHARD }}
+    add_header X-Jitsi-Shard {{ .Env.DEPLOYMENTINFO_SHARD }};
+    {{ end }}
+
+    # Opt out of FLoC (deprecated)
+    add_header Permissions-Policy "interest-cohort=()";
+
+    include /config/nginx-custom/*.conf;
+
+    location = /config.js {
+        alias /config/config.js;
+    }
+
+    location = /interface_config.js {
+        alias /config/interface_config.js;
+    }
+
+    location = /external_api.js {
+        alias /usr/share/jitsi-meet/libs/external_api.min.js;
+    }
+
+    {{ if $ENABLE_JAAS_COMPONENTS }}
+    location = /_api/room-info {
+        proxy_pass {{ $XMPP_BOSH_URL_BASE }}/room-info?prefix=$prefix&$args;
+        proxy_http_version 1.1;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header Host $http_host;
+    }
+    {{ end }}
+
+    # ensure all static content can always be found first
+    location ~ ^/(libs|css|static|images|fonts|lang|sounds|connection_optimization|.well-known|transcripts)/(.*)$ {
+        add_header 'Access-Control-Allow-Origin' '{{ $CORS_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN }}';
+        alias /usr/share/jitsi-meet/$1/$2;
+
+        # cache all versioned files
+        if ($arg_v) {
+            expires 1y;
+        }
+    }
+
+    {{ if $ENABLE_COLIBRI_WEBSOCKET }}
+    # colibri (JVB) websockets
+    location ~ ^/colibri-ws/({{ $COLIBRI_WEBSOCKET_REGEX }})/(.*) {
+        tcp_nodelay on;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+
+        proxy_pass http://$1:{{ $COLIBRI_WEBSOCKET_PORT }}/colibri-ws/$1/$2$is_args$args;
+    }
+
+    {{ if $ENABLE_OCTO }}
+    # colibri (JVB) Relay to Relay websockets
+    location ~ ^/colibri-relay-ws/([a-zA-Z0-9-\._]+)/(.*) {
+        tcp_nodelay on;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+
+        proxy_pass http://$1:{{ $COLIBRI_WEBSOCKET_PORT }}/colibri-relay-ws/$1/$2$is_args$args;
+    }
+    {{ end }}
+    {{ end }}
+
+      # BOSH
+      location = /http-bind {
+          proxy_set_header X-Forwarded-For $remote_addr;
+          proxy_set_header Host {{ $XMPP_DOMAIN }};
+
+          proxy_pass http://$prosody_node/http-bind?prefix=$prefix&$args;
+      }
+
+      {{ if $ENABLE_XMPP_WEBSOCKET }}
+      # xmpp websockets
+      location = /xmpp-websocket {
+          tcp_nodelay on;
+
+          proxy_http_version 1.1;
+          proxy_set_header Connection $connection_upgrade;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Host {{ $XMPP_DOMAIN }};
+          proxy_set_header X-Forwarded-For $remote_addr;
+
+          proxy_pass http://$prosody_node/xmpp-websocket?prefix=$prefix&$args;
+      }
+    {{ end }}
+
+    {{ if .Env.ETHERPAD_URL_BASE }}
+    # Etherpad-lite
+    location ^~ /etherpad/ {
+        proxy_buffering off;
+        proxy_cache_bypass $http_upgrade;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header X-Forwarded-For $remote_addr;
+
+        proxy_pass {{ .Env.ETHERPAD_URL_BASE }}/;
+    }
+    {{ end }}
+
+    {{ if .Env.WHITEBOARD_COLLAB_SERVER_URL_BASE }}
+    # whiteboard (excalidraw-backend)
+    location = /socket.io/ {
+        proxy_buffering off;
+        proxy_cache_bypass $http_upgrade;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header X-Forwarded-For $remote_addr;
+
+        proxy_pass {{ .Env.WHITEBOARD_COLLAB_SERVER_URL_BASE }}/socket.io/?$args;
+    }
+    {{ end }}
+
+    location ~ ^/([^/?&:'"]+)$ {
+        try_files $uri @root_path;
+    }
+
+    location @root_path {
+        rewrite ^/(.*)$ / break;
+    }
+
+    {{ if $ENABLE_SUBDOMAINS }}
+        # Matches /(TENANT)/pwa-worker.js or /(TENANT)/manifest.json to rewrite to / and look for file
+        location ~ ^/([^/?&:'"]+)/(pwa-worker.js|manifest.json)$ {
+            set $subdomain "$1.";
+            set $subdir "$1/";
+            rewrite ^/([^/?&:'"]+)/(pwa-worker.js|manifest.json)$ /$2;
+        }
+
+        location ~ ^/([^/?&:'"]+)/config.js$ {
+            set $subdomain "$1.";
+            set $subdir "$1/";
+
+            alias /config/config.js;
+        }
+
+        # BOSH for subdomains
+        location ~ ^/([^/?&:'"]+)/http-bind {
+            set $subdomain "$1.";
+            set $subdir "$1/";
+            set $prefix "$1";
+
+            rewrite ^/(.*)$ /http-bind;
+        }
+
+        {{ if $ENABLE_XMPP_WEBSOCKET }}
+        # websockets for subdomains
+        location ~ ^/([^/?&:'"]+)/xmpp-websocket {
+            set $subdomain "$1.";
+            set $subdir "$1/";
+            set $prefix "$1";
+
+            rewrite ^/(.*)$ /xmpp-websocket;
+        }
+        {{ end }}
+
+        {{ if $ENABLE_JAAS_COMPONENTS }}
+        location ~ ^/([^/?&:'"]+)/_api/room-info {
+            set $subdomain "$1.";
+            set $subdir "$1/";
+            set $prefix "$1";
+
+            rewrite ^/(.*)$ /_api/room-info;
+        }
+        {{ end }}
+
+        {{- if $ENABLE_LOAD_TEST_CLIENT }}
+        # load test minimal client, uncomment when used
+        location ~ ^/_load-test/([^/?&:'"]+)$ {
+            rewrite ^/_load-test/(.*)$ /load-test/index.html break;
+        }
+        location ~ ^/_load-test/libs/(.*)$ {
+            add_header 'Access-Control-Allow-Origin' '{{ $CORS_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN }}';
+            alias /usr/share/jitsi-meet/load-test/libs/$1;
+        }
+
+        # load-test for subdomains
+        location ~ ^/([^/?&:'"]+)/_load-test/([^/?&:'"]+)$ {
+            set $subdomain "$1.";
+            set $subdir "$1/";
+            set $prefix "$1";
+
+            rewrite ^/(.*)$ /load-test/index.html break;
+        }
+
+        # load-test for subdomains
+        location ~ ^/([^/?&:'"]+)/_load-test/libs/(.*)$ {
+            set $subdomain "$1.";
+            set $subdir "$1/";
+            set $prefix "$1";
+
+            alias /usr/share/jitsi-meet/load-test/libs/$2;
+        }
+
+        {{- end }}
+        # Anything that didn't match above, and isn't a real file, assume it's a room name and redirect to /
+        location ~ ^/([^/?&:'"]+)/(.*)$ {
+            set $subdomain "$1.";
+            set $subdir "$1/";
+            rewrite ^/([^/?&:'"]+)/(.*)$ /$2;
+        }
+    {{ end }}
+  `}}
+  {{- else }}
+  # Using web /defaults/meet.conf from container image
   {{ end }}

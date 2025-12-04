@@ -24,6 +24,7 @@ spec:
       annotations:
         si.jit.meet/hash-secret: "{{ toYaml .Values.secretEnvs | sha256sum | trunc 32 }}"
         si.jit.meet/hash-configmap: "{{ toYaml (concat .Values.extraEnvs .Values.extraEnvFrom) | sha256sum | trunc 32 }}"
+        si.jit.meet/hash-cont-init: "{{ include (print $.Template.BasePath "/configmaps-cont-init.yaml") . | sha256sum | trunc 32 }}"
       {{- range $annotation, $value := mergeOverwrite .Values.global.podAnnotations .Values.podAnnotations }}
         {{ $annotation }}: {{ $value }}
       {{- end }}
@@ -46,10 +47,6 @@ spec:
               name: {{ include "prosody.fullname" . }}
           - secretRef:
               name: {{ include "prosody.fullname" . }}
-          {{- if .Values.turn.enabled }}
-          - secretRef:
-              name: {{ include "prosody.fullname" . }}-turn
-          {{- end }}
           {{- range .Values.extraEnvFrom }}
           - {{ tpl (toYaml . ) $ | indent 12 | trim }}
           {{- end }}
@@ -58,7 +55,6 @@ spec:
           - {{ tpl (toYaml . ) $ | indent 12 | trim }}
           {{- end }}
           {{- end }}
-          {{- if or (.Values.extraEnvs) (.Values.metrics.enabled) (.Values.turn.enabled) (.Values.enableAuth) }}
           env:
           - name: XMPP_MODULES 
             value: "{{ append (.Values.xmppModules | default (list)) "muc_size" | join "," }}"
@@ -98,7 +94,6 @@ spec:
           {{- range .Values.extraEnvs }}
           - {{ tpl (toYaml . ) $ | indent 12 | trim }}
           {{- end }}
-          {{- end }}
           ports:
             - name: xmpp-c2s
               containerPort: {{ index .Values.service.ports "xmpp-c2s" }}
@@ -134,6 +129,11 @@ spec:
           - name: custom-cont-inits
             mountPath: /etc/cont-init.d/10-config
             subPath: 10-config
+          {{- end }}
+          {{- if $.Values.global.webinar.enabled }}
+          - name: custom-cont-inits
+            mountPath: /etc/cont-init.d/11-webinar-config
+            subPath: 11-webinar-config
           {{- end }}
           {{- if and (eq .Values.authType "hybrid_matrix_token") (.Values.uvs.disableMembershipVerification | default true) }}
           - name: custom-cont-inits
@@ -183,6 +183,8 @@ spec:
           items:
             - key: 10-config
               path: 10-config
+            - key: 11-webinar-config
+              path: 11-webinar-config
             - key: 12-config-uvs
               path: 12-config-uvs
       - name: custom-defaults

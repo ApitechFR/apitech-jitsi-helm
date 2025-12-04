@@ -1,0 +1,39 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "prosody-visitor.fullname" . -}}
+{{- $svcPort := index .Values.service.ports "bosh-insecure" -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "prosody-visitor.labels" . | nindent 4 }}
+  {{- if .Values.ingress.annotations  }}
+  annotations:
+    {{- with .Values.ingress.annotations }}
+    {{-   toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
+{{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+      - {{ .Values.ingress.host | quote }}
+      secretName: {{ .Values.ingress.tls.secretName }}
+{{- end }}
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $fullName }}
+                port:
+                  {{- if kindIs "float64" $svcPort }}
+                  number: {{ $svcPort }}
+                  {{- else }}
+                  name: {{ $svcPort }}
+                  {{- end }}
+{{- end }}

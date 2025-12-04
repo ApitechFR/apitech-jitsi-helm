@@ -11,6 +11,68 @@ data:
     {{- else }}
     # Using prosody /etc/cont-init.d/10-config from container image
     {{ end }}
+  11-webinar-config: |
+    #!/usr/bin/with-contenv bash
+
+    {{- if .Values.global.webinar.enabled }}
+    # APITECH : Configuration additionnelle pour le module webinar (prosody-visitor)
+
+    {{- $replicaName := "" -}}
+    {{- $replicaHost := "" -}}
+    {{- $hosts := list -}}
+
+    # Suppression de la ligne "Include "conf.d/*.cfg.lua"" du fichier pour la remettre après
+    # L'ordre est important, car le bloc s2sout_override doit être avant l'inclusion des fichiers de conf.d
+    sed -i '/^Include "conf.d\/\*\.cfg\.lua"$/d' /config/prosody.cfg.lua
+
+    echo "-- Configuring prosody for webinar module ---"
+
+    echo "s2sout_override = {" >> /config/prosody.cfg.lua
+
+    {{- range $i := until (int .Values.global.webinar.visitorProsodyCount) }}
+      {{- $replicaName = printf "v%d.meet.jitsi" $i }}
+      {{- if $.Values.global.clusterDomain }}
+        {{- $replicaHost = printf "%s-%d.%s.svc.%s:5269" (printf "%s-%s" $.Release.Name "prosody-visitor") $i $.Release.Namespace $.Values.global.clusterDomain }}
+      {{- else }}
+        {{- $replicaHost = printf "%s-%d.%s.svc:5269" (printf "%s-%s" $.Release.Name "prosody-visitor") $i $.Release.Namespace }}
+      {{- end }}
+
+      {{- $hosts = append $hosts (printf "'%s'" $replicaName) }}
+      {{- $hosts = append $hosts (printf "'muc.%s'" $replicaName) }}
+      {{- $hosts = append $hosts (printf "'polls.%s'" $replicaName) }}
+
+      echo "  [\"{{ $replicaName }}\"] = \"tcp://{{ $replicaHost }}\";" >> /config/prosody.cfg.lua
+      echo "  [\"muc.{{ $replicaName }}\"] = \"tcp://{{ $replicaHost }}\";" >> /config/prosody.cfg.lua
+      echo "  [\"polls.{{ $replicaName }}\"] = \"tcp://{{ $replicaHost }}\";" >> /config/prosody.cfg.lua
+    {{- end }}
+
+    echo "};" >> /config/prosody.cfg.lua
+    echo "" >> /config/prosody.cfg.lua
+    echo "s2s_whitelist = {" >> /config/prosody.cfg.lua
+    echo "  {{ join ", " $hosts }}" >> /config/prosody.cfg.lua
+    echo "}" >> /config/prosody.cfg.lua
+
+    # Ajout de la ligne Include "conf.d/*.cfg.lua" à la fin du fichier
+    echo "" >> /config/prosody.cfg.lua
+    echo 'Include "conf.d/*.cfg.lua"' >> /config/prosody.cfg.lua
+
+    # Path du auto_allow_visitor_promotion si activé
+    {{- if not (.Values.global.webinar.autoAllowVisitorPromotion | default false) }}
+    sed -i 's|^\([[:space:]]*auto_allow_visitor_promotion[[:space:]]*=[[:space:]]*\)true|\1false|' /config/conf.d/jitsi-meet.cfg.lua
+    {{- end }}
+
+    # Patch du module mod_muc_domain_mapper.lua pour corriger un problème de mappage des domaines
+    sed -i "s/if stanza.skipMapping then/if stanza.skipMapping or session.type == 's2sout' then/g" /prosody-plugins/mod_muc_domain_mapper.lua
+
+    # Patch du module mod_muc pour corriger un problème de présence des visiteurs
+    FILE="/usr/lib/prosody/modules/muc/mod_muc.lua"
+    sed -i 's|^.*room:set_presence_broadcast(module:get_option_enum("muc_room_default_presence_broadcast", room:get_presence_broadcast(), "visitor", "participant",$|        room:set_presence_broadcast(module:get_option("muc_room_default_presence_broadcast", room:get_presence_broadcast()));|' "$FILE"
+    sed -i '/"moderator"));/d' "$FILE"
+
+    {{- else }}
+    # Webinar module not enabled
+    {{- end }}
+
   {{- if and (eq .Values.authType "hybrid_matrix_token") (.Values.uvs.disableMembershipVerification | default true) }}
   12-config-uvs: |
     #!/usr/bin/with-contenv bash

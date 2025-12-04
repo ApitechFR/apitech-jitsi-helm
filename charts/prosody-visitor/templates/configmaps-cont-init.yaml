@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "prosody-visitor.fullname" . }}-cont-inits
+  labels:
+    {{- include "prosody-visitor.labels" . | nindent 4 }}
+data:
+  10-config: |
+    {{- if .Values.custom.contInit._10_config }}
+      {{- .Values.custom.contInit._10_config | nindent 4 }}
+    {{- else }}
+    # Using prosody /etc/cont-init.d/10-config from container image
+    {{ end }}
+  11-webinar-config: |
+    #!/usr/bin/with-contenv bash
+
+    {{- if .Values.global.webinar.enabled }}
+    # APITECH : Configuration additionnelle pour le module webinar (prosody-visitor)
+
+    # Patch du module mod_muc pour corriger un problème de présence des visiteurs
+    FILE="/usr/lib/prosody/modules/muc/mod_muc.lua"
+    sed -i 's|^.*room:set_presence_broadcast(module:get_option_enum("muc_room_default_presence_broadcast", room:get_presence_broadcast(), "visitor", "participant",$|        room:set_presence_broadcast(module:get_option("muc_room_default_presence_broadcast", room:get_presence_broadcast()));|' "$FILE"
+    sed -i '/"moderator"));/d' "$FILE"
+
+    {{- else }}
+    # Webinar module not enabled
+    {{- end }}
+

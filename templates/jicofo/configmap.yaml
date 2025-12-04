@@ -25,3 +25,19 @@ data:
   OCTO_BRIDGE_SELECTION_STRATEGY: "SplitBridgeSelectionStrategy"
   {{- end }}
   JICOFO_ENABLE_REST: "1"
+  {{- if .Values.global.webinar.enabled }}
+  {{/* create a comma-separated list of visitor XMPP servers using the same logic as jitsi-meet.xmpp-visitor.servers, but per-replica */}}
+
+  {{- $hosts := list -}}
+  {{- $replica := "" -}}
+  {{- range $i := until (int .Values.global.webinar.visitorProsodyCount) -}}
+    {{- if $.Values.global.clusterDomain -}}
+      {{- $replica = (printf "%s-%d.%s.svc.%s:5222" (include "jitsi-meet.prosody-visitor.fullname" $) $i $.Release.Namespace $.Values.global.clusterDomain) }}
+    {{- else -}}
+      {{- $replica = (printf "%s-%d.%s.svc:5222" (include "jitsi-meet.prosody-visitor.fullname" $) $i $.Release.Namespace) }}
+    {{- end -}}
+    {{- $hosts = append $hosts $replica }}
+  {{- end }}
+
+  VISITORS_XMPP_SERVER: '{{ join "," $hosts }}'
+  {{- end }}
