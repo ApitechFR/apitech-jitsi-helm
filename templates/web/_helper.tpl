@@ -114,3 +114,7 @@ app.kubernetes.io/component: web-overlay-db
 {{- define "jitsi-meet.prosody.fullname" -}}
 {{ include "call-nested" (list . "prosody" "prosody.fullname") }}
 {{- end -}}
+
+{{- define "jitsi-meet.prosody-visitor.fullname" -}}
+{{ include "call-nested" (list . "prosody-visitor" "prosody-visitor.fullname") }}
+{{- end -}}

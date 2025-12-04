@@ -33,3 +33,7 @@ AVERTISSEMENT : Le frontend Excalidraw n'est pas encore fonctionnel. Merci de d�
 {{- if and .Values.excalidraw.backend.enabled .Values.excalidraw.useExternalExcalidraw }}
 AVERTISSEMENT : Avoir excalidraw.backend.enabled à true et excalidraw.useExternalExcalidraw à true n'est pas compatible. L'Excalidraw externe sera utilisé.
 {{- end }}
+
+{{- if and .Values.global.webinar.enabled (gt .Values.global.webinar.visitorProsodyCount 1) }}
+AVERTISSEMENT : Le mode Webinar avec plus d'un seul noeud Prosody Visitor ne fonctionnera pas. Veuillez le réduire à nouveau à 1.
+{{- end }}

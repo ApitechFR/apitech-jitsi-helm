@@ -41,6 +41,12 @@ authConfig: &authConfig
       repository: "matrixdotorg/matrix-user-verification-service"
       tag: "branch-master"
     issuer: "CHANGEME.jitsi.example.com"
+    
+  ## APITECH : Paramètres pour le module webinar (prosody-visitor).
+  webinar:
+    enabled: false
+    visitorProsodyCount: 1 ## APITECH : Seul 1 prosody-visitor est supporté pour le moment.
+    autoAllowVisitorPromotion: false
   enableGuests: true
 
 <<: *authConfig
