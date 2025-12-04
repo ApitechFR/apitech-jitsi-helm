@@ -1,6 +1,9 @@
 dependencies:
 - name: prosody
   repository: file://charts/prosody
-  version: 1.7.7
-digest: sha256:c5cbef13d6d21d332c58903969c20e9825caf9aa91feb1935d035f2aa0d9b0e6
-generated: "2025-11-18T15:49:50.471656699+01:00"
+  version: 1.7.8
+- name: prosody-visitor
+  repository: file://charts/prosody-visitor
+  version: 1.7.8
+digest: sha256:d6d245eca424bc3b420497a7a74df663c3d21319267d1432ecf9e32f0680ac45
+generated: "2025-12-04T17:21:26.592174708+01:00"
