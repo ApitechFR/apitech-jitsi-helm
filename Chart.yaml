@@ -30,7 +30,7 @@ dependencies:
     version: 1.7.8
 
   - name: prosody-visitor
-    condition: webinar.enabled
+    condition: global.webinar.enabled
     repository: "file://charts/prosody-visitor"
     version: 1.7.8
 
