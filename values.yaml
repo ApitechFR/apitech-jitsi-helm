@@ -856,6 +856,71 @@ prosody:
     #   subPath: mod_measure_client_presence.lua
     #   mountPath: /prosody-plugins-custom/mod_measure_client_presence.lua
 
+prosody-visitor:
+  ## APITECH : Configuration de l'authentification pour le module webinar.
+  <<: *authConfig
+  useExternalProsody: false
+  turn:
+    enabled: true
+    host: CHANGEME.example.com
+    port: 443
+  ## APITECH : Ne PAS changer cette valeur (sauf en cas d'utilisation de fullNameOverride ou nameOverride).
+  server: '{{ include "call-nested" (list . "prosody" "prosody.fullname") }}.{{ .Release.Namespace }}.svc.cluster.local'
+  extraEnvFrom:
+  - secretRef:
+      name: '{{ printf "%s-%s" .Release.Name "prosody" }}-jibri'
+  - secretRef:
+      name: '{{ printf "%s-%s" .Release.Name "prosody" }}-jicofo'
+  - secretRef:
+      name: '{{ printf "%s-%s" .Release.Name "prosody" }}-jigasi'
+  - secretRef:
+      name: '{{ printf "%s-%s" .Release.Name "prosody" }}-jvb'
+  - secretRef:
+      name: '{{ printf "%s-%s" .Release.Name "prosody" }}-turn'
+  - configMapRef:
+      name: '{{ printf "%s-%s" .Release.Name "prosody" }}-common'
+  image:
+    repository: jitsi/prosody
+  persistence:
+    enabled: false
+    size: 500Mi
+    accessMode: "ReadWriteOnce"
+    storageClass: "longhorn-no-retain"
+  ## APITECH : Désactivation du module "end_conference".
+  #  À laisser désactivé sauf contre-indication.
+  enableEndConference: false
+
+    ## APITECH : Modules XMPP supplémentaires
+  #  Par défaut, rien à ajouter. Le module muc_size nécessaire pour l'overlay v3 est déjà inclus.
+  xmppModules: []
+    # - mod_measure_client_presence
+    # - mod_custom_presence
+
+  # service:
+  #   ports:
+  # If Prosody c2s in needed on private net outside the cluster
+  #     xmppc2snodePort: 30522
+
+  ## Override the image-provided configuration files:
+  #  See https://github.com/jitsi/docker-jitsi-meet/tree/master/prosody/rootfs
+  custom:
+    contInit:
+      _10_config: ""
+    defaults:
+      _prosody_cfg_lua: ""
+      _saslauthd_conf: ""
+      _jitsi_meet_cfg_lua: ""
+
+  extraVolumes: []
+    # - name: prosody-modules
+    #   configMap:
+    #     name: prosody-modules
+
+  extraVolumeMounts: []
+    # - name: prosody-modules
+    #   subPath: mod_measure_client_presence.lua
+    #   mountPath: /prosody-plugins-custom/mod_measure_client_presence.lua
+
 ## APITECH : Paramètres pour le dashboard Grafana et la base de données Prometheus.
 #  Nécessaire pour monitorer les JVBs et Jicofo.
 # Nécessite l'opérateur prometheus-operator dans le cluster.
