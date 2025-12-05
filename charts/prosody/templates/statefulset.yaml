@@ -183,10 +183,14 @@ spec:
           items:
             - key: 10-config
               path: 10-config
+            {{- if $.Values.global.webinar.enabled }}
             - key: 11-webinar-config
               path: 11-webinar-config
+            {{- end }}
+            {{- if and (eq .Values.authType "hybrid_matrix_token") (.Values.uvs.disableMembershipVerification | default true) }}
             - key: 12-config-uvs
               path: 12-config-uvs
+            {{- end }}
       - name: custom-defaults
         configMap:
           name: {{ include "prosody.fullname" . }}-defaults

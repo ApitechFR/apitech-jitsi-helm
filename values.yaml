@@ -34,6 +34,8 @@ authConfig: &authConfig
   jwt:
     appId: "app_id_jwt"
     secret: "secret_jwt"
+  ## APITECH : Paramètres pour le module Matrix User Verification Service (UVS).
+  ## Pas de valeur "enabled" par ici, car le module UVS est activé automatiquement si authType est "hybrid_matrix_token".
   uvs:
     logLevel: info
     homeserverURL: "https://CHANGEME.synapse.example.com"
