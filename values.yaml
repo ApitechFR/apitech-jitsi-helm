@@ -935,6 +935,7 @@ dashboard:
     storage:
       accessMode: "ReadWriteOnce"
       size: "2500Mi"
+    securityContext: {}
 
   grafana:
     enabled: true
@@ -945,8 +946,7 @@ dashboard:
 
     storage:
       size: 5Gi
-      ## APITECH : ReadWriteMany nécessaire pour le Grafana dans ce cas.
-      accessMode: ReadWriteMany
+      accessMode: ReadWriteOnce
       storageClassName: CHANGEME
 
     ingress:

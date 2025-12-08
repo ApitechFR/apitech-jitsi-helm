@@ -8,6 +8,10 @@ metadata:
 spec:
   serviceAccountName: {{ include "jitsi-meet.dashboard.prometheus.fullname" . }}
   replicas: 1
+  securityContext:
+    runAsUser: {{ .Values.dashboard.prometheus.securityContext.runAsUser | default 65534 }}
+    runAsGroup: {{ .Values.dashboard.prometheus.securityContext.runAsGroup | default 65534 }}
+    fsGroup: {{ .Values.dashboard.prometheus.securityContext.fsGroup | default 65534 }}
   serviceMonitorSelector: {}
   serviceMonitorNamespaceSelector: null
   podMonitorSelector: {}
