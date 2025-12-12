@@ -11,3 +11,6 @@ data:
   {{- else }}
   # Using web /etc/cont-init.d/10-config from container image
   {{ end }}
+  11-config-interface: |
+    #!/usr/bin/with-contenv bash
+    sed -i "s/    SHOW_JITSI_WATERMARK: true/    SHOW_JITSI_WATERMARK: false/g" /config/interface_config.js
