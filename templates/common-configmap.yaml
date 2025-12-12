@@ -71,3 +71,6 @@ data:
   {{- if .Values.global.webinar.enabled }}
   ENABLE_VISITORS: "true"
   {{- end }}
+
+  PREFERRED_LANGUAGE: {{ .Values.preferredLanguage | default "fr-FR" | quote }}
+  DEFAULT_LANGUAGE: {{ .Values.defaultLanguage | default "fr" | quote }}
